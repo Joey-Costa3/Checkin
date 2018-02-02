@@ -1,0 +1,19 @@
+{% extends "attendance/instructorBase.html" %}
+
+{% block content %}
+<h3>Attendance for Course {{ course_id }} on {{ day }}</h3>
+
+<ul>
+	<li><div class="attendanceUser">Student</div><div class="attendanceResult">Present</div></li>
+{% for record in recordList %}
+	<li>
+		<div class="attendanceUser">
+			{{record.studentUsername|safe}} ({{record.user.last_name|safe}}, {{record.user.first_name|safe}})
+		</div>
+		<div class="attendanceResult">
+			{% if record.status == 'P' %} X {% endif %}
+		</div>
+	</li>
+{% endfor %}
+</ul>
+{% endblock %}

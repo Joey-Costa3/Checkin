@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>SoC Checkin</title>
+  <meta name="description" content="website description" />
+  <meta name="keywords" content="website keywords, website keywords" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static "style/style.css" %}" title="style" />
+</head>
+
+<body>
+  <div id="main">
+    <div id="header">
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="/login">SoC Checkin</a></h1>
+        </div>
+        <a href="{% url 'logoutURL' %}"><h4 id="logout">Log Out as {{ request.user.username }}</h4></a>
+        <a href="{% url 'instructorURL' user_id=request.user.username%}"><h4 id="instructors">Instructors</h4></a>
+      </div>
+    </div>
+    <div id="site_content">
+      <div id="content" style="width:100%;">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% block content %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

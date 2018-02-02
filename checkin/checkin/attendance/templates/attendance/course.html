@@ -1,0 +1,20 @@
+{% extends "attendance/instructorBase.html" %}
+
+{% block content %}
+<a href="{% url 'editCourseURL' course.name %}"><h4 id="editCourse">Edit Course</h4></a>
+<h1 style="font-size: 30px;">{{ course.display_name }}</h1>
+
+</br></br><h2>Take Today's Attendance</h2>
+{% include "attendance/form.html" with form=form %}
+
+
+</br></br><h2>Dates</h2>
+{% for d in attendance %}
+	<li><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></li>
+{% endfor %}
+
+</br></br><h2>Students</h2>
+{% for s in students %}
+	<li><a href="{% url 'courseStudentAttendanceURL' course.name s %}">{{ s }}</a></li>
+{% endfor %}
+{% endblock %}

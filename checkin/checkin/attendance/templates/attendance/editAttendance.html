@@ -1,0 +1,19 @@
+{% extends "attendance/instructorBase.html" %}
+
+{% block content %}
+<h3>Attendance for Course {{ course_id }} on {{ day }}</h3>
+
+<form method="post" action="{% url 'courseAttendanceURL' user_id course_id day %}">
+{{ formset.management_form }}
+
+{% for form in formset %}
+	<li>{{form.studentUsername}}  {{form.status}}</li>
+	{% for hidden in form.hidden_fields %}
+		{{hidden}}
+	{% endfor %}
+{% endfor %}
+<input type="submit" value="Update">
+{% csrf_token %}
+</form>
+
+{% endblock %}
