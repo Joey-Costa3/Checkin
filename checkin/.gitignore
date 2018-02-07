@@ -1,6 +1,0 @@
-*.py[coa]
-*.sa*w
-venv
-migrations/
-!migrations/__init__.py
-!migrations/__pycache__/
