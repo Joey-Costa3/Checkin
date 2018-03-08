@@ -6,9 +6,9 @@ Django settings for attendance_tracker project.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import ldap
+#import ldap
 #from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+#from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 import django.utils.http
 
 #DEBUG = <%= if @debug then 'True' else 'False' end %>
@@ -156,40 +156,41 @@ LOGGING = {
 # LDAP
 #
 
-AUTH_LDAP_SERVER_URI = 'LDAP_SERVER_URI'
-AUTH_LDAP_BIND_DN = 'BINDING'
-AUTH_LDAP_BIND_PASSWORD = 'PASSWORD'
-AUTH_LDAP_USER_SEARCH = LDAPSearch('o=clemsonu', ldap.SCOPE_SUBTREE, '(&(objectClass=inetOrgPerson)(uid=%(user)s))')
-AUTH_LDAP_USER_ATTR_MAP = {
-  'first_name': 'givenName',
-  'last_name': 'sn',
-  'email': 'mail',
-}
-AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-  'is_staff': 'cn=coes_socunix,ou=group,ou=SoC,ou=CES,o=CLEMSONU',
-  'is_superuser': 'cn=coes_socunix_fulltime,ou=group,ou=SoC,ou=CES,o=CLEMSONU',
-}
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch('ou=group,ou=SoC,ou=CES,o=clemsonu', ldap.SCOPE_ONELEVEL, '(objectClass=groupOfNames)')
-AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+#AUTH_LDAP_SERVER_URI = 'LDAP_SERVER_URI'
+#AUTH_LDAP_BIND_DN = 'BINDING'
+#AUTH_LDAP_BIND_PASSWORD = 'PASSWORD'
+#AUTH_LDAP_USER_SEARCH = LDAPSearch('o=clemsonu', ldap.SCOPE_SUBTREE, '(&(objectClass=inetOrgPerson)(uid=%(user)s))')
+#AUTH_LDAP_USER_ATTR_MAP = {
+#  'first_name': 'givenName',
+#  'last_name': 'sn',
+#  'email': 'mail',
+#}
+#AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+#  'is_staff': 'cn=coes_socunix,ou=group,ou=SoC,ou=CES,o=CLEMSONU',
+#  'is_superuser': 'cn=coes_socunix_fulltime,ou=group,ou=SoC,ou=CES,o=CLEMSONU',
+#}
+#AUTH_LDAP_GROUP_SEARCH = LDAPSearch('ou=group,ou=SoC,ou=CES,o=clemsonu', ldap.SCOPE_ONELEVEL, '(objectClass=groupOfNames)')
+#AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
 
 #
 # CHECKIN
 #
 
-def GET_USER_BY_USERNAME(username):
-  from django.contrib.auth.models import User
-  from django_auth_ldap.backend import LDAPBackend
+#def GET_USER_BY_USERNAME(username):
+#  from django.contrib.auth.models import User
+#  from django_auth_ldap.backend import LDAPBackend
+#
+#  for domain in ('@clemson.edu', '@g.clemson.edu', '@exchange.clemson.edu'):
+#    if username.lower().endswith(domain):
+#      username = username[:-len(domain)]
+#      break
+#
+#  try:
+#    return User.objects.get(username=username)
+#  except User.DoesNotExist:
+#    backend = LDAPBackend()
+#    user = backend.populate_user(username)
+#    if user is None:
+#      raise User.DoesNotExist('%s not in LDAP or database' % username)
+#    return user
 
-  for domain in ('@clemson.edu', '@g.clemson.edu', '@exchange.clemson.edu'):
-    if username.lower().endswith(domain):
-      username = username[:-len(domain)]
-      break
-
-  try:
-    return User.objects.get(username=username)
-  except User.DoesNotExist:
-    backend = LDAPBackend()
-    user = backend.populate_user(username)
-    if user is None:
-      raise User.DoesNotExist('%s not in LDAP or database' % username)
-    return user
