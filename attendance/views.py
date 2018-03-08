@@ -162,13 +162,13 @@ def editCourse(request, course_id):
                         newc.student_list.clear()
                         newc.save()
                         for s in saved['students'].strip().split("\r\n"):
-                                if len(s) > 0:
-									for t in s.split(";"):
-                                        	try:
-                                        	        student = settings.GET_USER_BY_USERNAME(t)
-                                        	        newc.student_list.add(student)
-                                        	except User.DoesNotExist as e:
-                                        	        raise Exception('User not found: ' + t)
+                                 if len(s) > 0:
+                                        for t in s.split(";"):
+                                                try:
+                                                        student = settings.GET_USER_BY_USERNAME(t)
+                                                        newc.student_list.add(student)
+                                                except User.DoesNotExist as e:
+                                                        raise Exception('User not found: ' + t)
                         messages.info(request, 'UPDATED')
                         return redirect('editCourseURL',
                                 course_id=newc.name,

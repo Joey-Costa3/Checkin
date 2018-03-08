@@ -99,11 +99,11 @@ WSGI_APPLICATION = 'attendance_tracker.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'YOUR_DB_NAME',
+        'NAME': 'checkin',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'USER': 'YOUR_DB_USER',
-        'PASSWORD': 'YOUR_DB_USER_PASSWORD',
-	'HOST': 'postgres1.cs.clemson.edu',
+        'USER': 'postgres',
+        'PASSWORD': 'cpsc4910',
+	'HOST': 'localhost',
     }
 }
 
