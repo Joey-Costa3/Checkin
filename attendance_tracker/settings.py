@@ -179,18 +179,18 @@ LOGGING = {
 def GET_USER_BY_USERNAME(username):
   from django.contrib.auth.models import User
 #  from django_auth_ldap.backend import LDAPBackend
-#
-#  for domain in ('@clemson.edu', '@g.clemson.edu', '@exchange.clemson.edu'):
-#    if username.lower().endswith(domain):
-#      username = username[:-len(domain)]
-#      break
-#
-#  try:
-#    return User.objects.get(username=username)
-#  except User.DoesNotExist:
+
+  for domain in ('@clemson.edu', '@g.clemson.edu', '@exchange.clemson.edu'):
+    if username.lower().endswith(domain):
+      username = username[:-len(domain)]
+      break
+
+  try:
+    return User.objects.get(username=username)
+  except User.DoesNotExist:
 #    backend = LDAPBackend()
-#    user = backend.populate_user(username)
-#    if user is None:
-#      raise User.DoesNotExist('%s not in LDAP or database' % username)
-#    return user
+    user = backend.populate_user(username)
+    if user is None:
+      raise User.DoesNotExist('%s not in LDAP or database' % username)
+    return user
 
