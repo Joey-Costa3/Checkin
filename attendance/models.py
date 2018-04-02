@@ -98,7 +98,7 @@ class CourseCode(models.Model):
 		return "{}, code = {}, expiration = {}".format(self.getCourse(), self.code, self.expirationTime)
 
 class AttendanceRecord(models.Model):
-	user = models.ForeignKey(User)
+	user1 = models.ForeignKey(User)
 	CourseId = models.IntegerField(null=True)
 	studentUsername = models.CharField(max_length=10, default="")
 	date = models.DateField()

@@ -176,8 +176,8 @@ LOGGING = {
 # CHECKIN
 #
 
-#def GET_USER_BY_USERNAME(username):
-#  from django.contrib.auth.models import User
+def GET_USER_BY_USERNAME(username):
+  from django.contrib.auth.models import User
 #  from django_auth_ldap.backend import LDAPBackend
 #
 #  for domain in ('@clemson.edu', '@g.clemson.edu', '@exchange.clemson.edu'):
