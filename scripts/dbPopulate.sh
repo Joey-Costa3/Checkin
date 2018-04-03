@@ -47,7 +47,7 @@ s3.cuid = 333333
 s3.username = 'studthree3'
 s3.save()
 
-c = Course(name = "tc101", instructorUsername='jdoe')
+c = Course(name = "tc101", instructorusername='jdoe')
 c.save()
 c.student_list.add(s2)
 c.student_list.add(s3)

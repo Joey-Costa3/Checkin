@@ -59,7 +59,7 @@ class UpdateCourse(forms.Form):
                 widgets = {
                         'text': forms.Textarea(attrs={'rows':-45, 'cols':25}),
                 }
-        checkinWindow = TimeInputField(label=mark_safe('<p class="formLabel">Sign In Window (minutes)</p>'), label_suffix="", initial={'code': 15})
+        checkinwindow = TimeInputField(label=mark_safe('<p class="formLabel">Sign In Window (minutes)</p>'), label_suffix="", initial={'code': 15})
         students = NamesTextarea(label=mark_safe('<p class="formLabel">Students</p>'), label_suffix="", max_length=15*300, required=False)
 
 class CourseHome(forms.Form):

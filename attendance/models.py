@@ -66,18 +66,18 @@ class Course(models.Model):
 	display_name = models.CharField(max_length=20, blank=True)
 	instructor = models.CharField(max_length=20, blank=True)
 	student_list = models.ManyToManyField(User, blank=True, related_name='+')
-	instructorUsername = models.CharField(max_length=15, default="")
-	checkinWindow = models.PositiveSmallIntegerField(default=10)
-	isActive = models.BooleanField(default=True)
+	instructorusername = models.CharField(max_length=15, default="")
+	checkinwindow = models.PositiveSmallIntegerField(default=10)
+	isactive = models.BooleanField(default=True)
 
 	def getId(self):
 		return self.id
 
 	def getInstructor(self):
-		return User.objects.get(username=self.instructorUsername)
+		return User.objects.get(username=self.instructorusername)
 
 	def isInstructor(self,instruct):
-		if self.instructorUsername==instruct.username:
+		if self.instructorusername==instruct.username:
 			return True
 		else:
 			return False

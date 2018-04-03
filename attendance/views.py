@@ -31,7 +31,7 @@ def instructorHome(request, user_id):
                 return redirect('loginURL')
 
         instructor=get_object_or_404(User,username=user_id)
-        c_list= Course.objects.filter(isActive=True).filter(instructorUsername=instructor.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
         return render(request, 'attendance/instructor.html', {'instructor': instructor, 'courses': c_list})
 
 @login_required
@@ -68,7 +68,7 @@ def courseHome(request, course_id):
                 else:
                         messages.info(request, 'INVALID')
         else:
-                form = CourseHome(initial = { 'time': course.checkinWindow })
+                form = CourseHome(initial = { 'time': course.checkinwindow })
                 courseCode = CourseCode.objects.filter(codeDate=date.today()).filter(courseId=course.id)
                 if courseCode.count() > 0:
                         messages.info(request, 'Attendance in progress: <span id="codeBlock">' + courseCode.first().code + '</span>', extra_tags='safe')
@@ -79,7 +79,7 @@ def courseHome(request, course_id):
                 student_list.append(s['username'])
         d_list=AttendanceRecord.objects.filter(CourseId=course.id).values('date').distinct().order_by('-date')
         instructor=get_object_or_404(User,username=request.user.username)
-        c_list= Course.objects.filter(isActive=True).filter(instructorUsername=instructor.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
         return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor, 'courses': c_list, 'form':form, 'students': student_list})
 
 @login_required
@@ -87,7 +87,7 @@ def attendance(request, course_id, day):
         course = get_object_or_404(Course, name=course_id)
         user = get_object_or_404(User, username=request.user.username)
         s_list=AttendanceRecord.objects.filter(CourseId=course.id).filter(date=day).order_by('studentUsername')
-        c_list= Course.objects.filter(isActive=True).filter(instructorUsername=user.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
         print(s_list)
 
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
@@ -102,7 +102,7 @@ def studentAttendance(request, course_id, user_id):
         course = get_object_or_404(Course, name=course_id)
         user = get_object_or_404(User, username=request.user.username)
         a_list=AttendanceRecord.objects.filter(CourseId=course.id).filter(studentUsername=user_id).order_by('date')
-        c_list= Course.objects.filter(isActive=True).filter(instructorUsername=user.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
 
         present=sum(a.status == "P" for a in a_list)
         total=len(a_list)
@@ -120,7 +120,7 @@ def editAttendance(request, user_id, course_id, day):
         course = get_object_or_404(Course, name=course_id)
         user = get_object_or_404(User, username=user_id)
         s_list=AttendanceRecord.objects.filter(CourseId=course.id).filter(date=day).order_by('studentUsername')
-        c_list= Course.objects.filter(isActive=True).filter(instructorUsername=user.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
 
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
 
@@ -158,7 +158,7 @@ def editCourse(request, course_id):
                 form = UpdateCourse(request.POST)
                 if form.is_valid():
                         saved = form.cleaned_data
-                        newc.checkinWindow = saved['checkinWindow']
+                        newc.checkinwindow = saved['checkinwindow']
                         newc.student_list.clear()
                         newc.save()
                         for s in saved['students'].strip().split("\r\n"):
@@ -180,11 +180,11 @@ def editCourse(request, course_id):
                 for s in newc.student_list.all().values('username'):
                         student_list.append(s['username'])
                 form = UpdateCourse(initial = {
-                        'checkinWindow': newc.checkinWindow,
+                        'checkinwindow': newc.checkinwindow,
                         'students': "\n".join(student_list),
                 })
         instructor=get_object_or_404(User,username=request.user.username)
-        c_list= Course.objects.filter(isActive=True).filter(instructorUsername=instructor.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
         return render(request, 'attendance/editCourse.html',
                 {'course_id': course_id, 'form': form, 'instructor': instructor, 'courses': c_list}
         )

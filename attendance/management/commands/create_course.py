@@ -32,7 +32,7 @@ class Command(BaseCommand):
       name=name,
       display_name=display_name,
       instructor=user,
-      instructorUsername=user,
+      instructorusername=user,
     )
     try:
       course.full_clean()

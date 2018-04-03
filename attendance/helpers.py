@@ -22,10 +22,10 @@ def validateUser(loggedInUser, **kwargs):
 		if user.username == loggedInUser.username:
 			return True
 	if course is not None and user is None:
-		if loggedInUser.username == course.instructorUsername:
+		if loggedInUser.username == course.instructorusername:
 			return True
 	if course is not None and user is not None:
-		if (loggedInUser.username == course.instructorUsername and loggedInUser.username == user.username):
+		if (loggedInUser.username == course.instructorusername and loggedInUser.username == user.username):
 			return True
 	return False
 
