@@ -68,8 +68,8 @@ class CourseHome(forms.Form):
 class AttendanceStatus(forms.ModelForm):
         class Meta:
                 model = AttendanceRecord
-                fields = ('studentUsername','status',)
-        studentUsername = NameCharField(disabled=True)
+                fields = ('studentusername','status',)
+        studentusername = NameCharField(disabled=True)
 
 class LoginForm(forms.Form):
         username = forms.CharField()

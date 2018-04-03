@@ -87,22 +87,22 @@ class Course(models.Model):
 
 class CourseCode(models.Model):
 	code = models.CharField(null=False, max_length=5)
-	courseId = models.IntegerField(default=0)
-	codeDate = models.DateField(auto_now_add = True)
-	expirationTime = models.DateTimeField()
+	courseid = models.IntegerField(default=0)
+	codedate = models.DateField(auto_now_add = True)
+	expirationtime = models.DateTimeField()
 
 	def getCourse(self):
-		return Course.objects.get(id=self.courseId)
+		return Course.objects.get(id=self.courseid)
 
 	def __str__(self):
-		return "{}, code = {}, expiration = {}".format(self.getCourse(), self.code, self.expirationTime)
+		return "{}, code = {}, expiration = {}".format(self.getCourse(), self.code, self.expirationtime)
 
 class AttendanceRecord(models.Model):
 	user1 = models.ForeignKey(User)
-	CourseId = models.IntegerField(null=True)
+	courseid = models.IntegerField(null=True)
 	studentUsername = models.CharField(max_length=10, default="")
 	date = models.DateField()
-	signIn = models.DateTimeField(blank=True, null=True)
+	signin = models.DateTimeField(blank=True, null=True)
 
 	PRESENT = 'P'
 	EXCUSED = 'E'
@@ -116,10 +116,10 @@ class AttendanceRecord(models.Model):
 	status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=UNEXCUSED)
 
 	def getCourse(self):
-		return Course.objects.get(id=self.CourseId)
+		return Course.objects.get(id=self.courseid)
 
 	def getStudent(self):
 		return User.objects.get(username=self.studentUsername)
 
 	def __str__(self):
-		return "{}, {}, {}, {}".format(self.getCourse(), self.getStudent(), self.date, self.signIn, self.status)
+		return "{}, {}, {}, {}".format(self.getCourse(), self.getStudent(), self.date, self.signin, self.status)

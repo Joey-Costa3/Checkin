@@ -48,36 +48,36 @@ def courseHome(request, course_id):
                 form=CourseHome(request.POST)
                 if form.is_valid():
                         saved=form.cleaned_data
-                        courseCode = CourseCode.objects.filter(codeDate=date.today()).filter(courseId=course.id)
-                        print(courseCode.count())
-                        if courseCode.count() is 0:
+                        coursecode = CourseCode.objects.filter(codedate=date.today()).filter(courseid=course.id)
+                        print(coursecode.count())
+                        if coursecode.count() is 0:
                                 for s in course.student_list.all():
-                                        AttendanceRecord.objects.create(CourseId=course.id,user=s,studentUsername=s.username,date=date.today())
+                                        AttendanceRecord.objects.create(courseid=course.id,user=s,studentusername=s.username,date=date.today())
                                 #create course code for added day with given time
 
                                 c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
                                 while CourseCode.objects.filter(code=c).count() > 0:
                                         c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
                                 d=datetime.datetime.now() + datetime.timedelta(0,0,0,0,int(saved['time']))
-                                CourseCode.objects.create(code=c,courseId=course.id,expirationTime=d).save()
+                                CourseCode.objects.create(code=c,courseid=course.id,expirationtime=d).save()
                                 return redirect('courseHome',
                                         course_id=course_id,
                                 )
                         else:
-                                messages.info(request, 'Attendance in progress: <span id="codeBlock">' + courseCode.first().code + '</span>', extra_tags='safe')
+                                messages.info(request, 'Attendance in progress: <span id="codeBlock">' + coursecode.first().code + '</span>', extra_tags='safe')
                 else:
                         messages.info(request, 'INVALID')
         else:
                 form = CourseHome(initial = { 'time': course.checkinwindow })
-                courseCode = CourseCode.objects.filter(codeDate=date.today()).filter(courseId=course.id)
-                if courseCode.count() > 0:
-                        messages.info(request, 'Attendance in progress: <span id="codeBlock">' + courseCode.first().code + '</span>', extra_tags='safe')
+                coursecode = CourseCode.objects.filter(codedate=date.today()).filter(courseid=course.id)
+                if coursecode.count() > 0:
+                        messages.info(request, 'Attendance in progress: <span id="codeBlock">' + coursecode.first().code + '</span>', extra_tags='safe')
                 else:
                         messages.info(request, 'Attendance not yet started for today')
         student_list = []
         for s in course.student_list.all().values('username'):
                 student_list.append(s['username'])
-        d_list=AttendanceRecord.objects.filter(CourseId=course.id).values('date').distinct().order_by('-date')
+        d_list=AttendanceRecord.objects.filter(courseid=course.id).values('date').distinct().order_by('-date')
         instructor=get_object_or_404(User,username=request.user.username)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
         return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor, 'courses': c_list, 'form':form, 'students': student_list})
@@ -86,7 +86,7 @@ def courseHome(request, course_id):
 def attendance(request, course_id, day):
         course = get_object_or_404(Course, name=course_id)
         user = get_object_or_404(User, username=request.user.username)
-        s_list=AttendanceRecord.objects.filter(CourseId=course.id).filter(date=day).order_by('studentUsername')
+        s_list=AttendanceRecord.objects.filter(courseid=course.id).filter(date=day).order_by('studentusername')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
         print(s_list)
 
@@ -101,7 +101,7 @@ def attendance(request, course_id, day):
 def studentAttendance(request, course_id, user_id):
         course = get_object_or_404(Course, name=course_id)
         user = get_object_or_404(User, username=request.user.username)
-        a_list=AttendanceRecord.objects.filter(CourseId=course.id).filter(studentUsername=user_id).order_by('date')
+        a_list=AttendanceRecord.objects.filter(courseid=course.id).filter(studentusername=user_id).order_by('date')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
 
         present=sum(a.status == "P" for a in a_list)
@@ -119,7 +119,7 @@ def studentAttendance(request, course_id, user_id):
 def editAttendance(request, user_id, course_id, day):
         course = get_object_or_404(Course, name=course_id)
         user = get_object_or_404(User, username=user_id)
-        s_list=AttendanceRecord.objects.filter(CourseId=course.id).filter(date=day).order_by('studentUsername')
+        s_list=AttendanceRecord.objects.filter(courseid=course.id).filter(date=day).order_by('studentusername')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
 
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
@@ -208,7 +208,7 @@ def studentSignIn(request):
                                 return render(request, 'attendance/failure.html')
 
                         # check for expiration
-                        expireTime = codeObj.expirationTime
+                        expireTime = codeObj.expirationtime
                         currTime = datetime.datetime.now()
                         if currTime > expireTime:
                                 return render(request, 'attendance/codeExpiredFailure.html')
@@ -220,11 +220,11 @@ def studentSignIn(request):
 
                         # update attendance record for user in that course
                         try:
-                                attObj = AttendanceRecord.objects.get(CourseId=course_id, 
-                                        studentUsername=request.user.username,
+                                attObj = AttendanceRecord.objects.get(courseid=course_id, 
+                                        studentusername=request.user.username,
                                         date=date)
                                 attObj.status = 'P'
-                                attObj.signIn = currTime
+                                attObj.signin = currTime
                         except ObjectDoesNotExist:
                                 return render(request, 'attendance/noMatchingAttRecordFailure.html')
 
