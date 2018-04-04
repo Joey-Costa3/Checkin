@@ -7,7 +7,7 @@
 {{ formset.management_form }}
 
 {% for form in formset %}
-	<li>{{form.studentUsername}}  {{form.status}}</li>
+	<li>{{form.studentusername}}  {{form.status}}</li>
 	{% for hidden in form.hidden_fields %}
 		{{hidden}}
 	{% endfor %}

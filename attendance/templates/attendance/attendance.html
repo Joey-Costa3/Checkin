@@ -8,7 +8,7 @@
 {% for record in recordList %}
 	<li>
 		<div class="attendanceUser">
-			{{record.studentUsername|safe}} ({{record.user.last_name|safe}}, {{record.user.first_name|safe}})
+			{{record.studentusername|safe}} ({{record.user.last_name|safe}}, {{record.user.first_name|safe}})
 		</div>
 		<div class="attendanceResult">
 			{% if record.status == 'P' %} X {% endif %}
