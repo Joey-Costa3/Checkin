@@ -74,9 +74,10 @@ def courseHome(request, course_id):
                         messages.info(request, 'Attendance in progress: <span id="codeBlock">' + coursecode.first().code + '</span>', extra_tags='safe')
                 else:
                         messages.info(request, 'Attendance not yet started for today')
-        student_list = []
-        for s in course.student_list.all().values('username'):
-                student_list.append(s['username'])
+        student_list = [[]]
+        for s in course.student_list.all().values():
+                student_list.append(s)
+        student_list.pop(0)
         d_list=AttendanceRecord.objects.filter(courseid=course.id).values('date').distinct().order_by('-date')
         instructor=get_object_or_404(User,username=request.user.username)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')

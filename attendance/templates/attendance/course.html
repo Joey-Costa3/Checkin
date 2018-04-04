@@ -3,7 +3,17 @@
 {% block content %}
 <a href="{% url 'editCourseURL' course.name %}"><h4 id="editCourse">Edit Course</h4></a>
 <h1 style="font-size: 30px;">{{ course.display_name }}</h1>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 
+<script>
+
+$(document).ready( function () {
+    $('#students').DataTable();
+} );
+</script>
 </br></br><h2>Take Today's Attendance</h2>
 {% include "attendance/form.html" with form=form %}
 
@@ -14,7 +24,22 @@
 {% endfor %}
 
 </br></br><h2>Students</h2>
-{% for s in students %}
-	<li><a href="{% url 'courseStudentAttendanceURL' course.name s %}">{{ s }}</a></li>
+<table class="table table-bordered" id="students">
+<thead>
+<tr>
+<th>Username</th>
+<th>First Name</th>
+<th>Last Name</th>
+</tr>
+</thead>
+<tbody>
+{% for s in students  %}
+	<tr>
+	<td><a href="{% url 'courseStudentAttendanceURL' course.name s.username %}">{{ s.username }}</a></td>
+	<td>{{ s.first_name }} </td>
+	<td>{{ s.last_name }} </td>
+	</tr>
 {% endfor %}
+</tbody>
+</table>
 {% endblock %}
