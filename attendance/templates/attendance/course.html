@@ -11,7 +11,15 @@
 <script>
 
 $(document).ready( function () {
-    $('#students').DataTable();
+    $('#students').DataTable({
+    paging: false
+    });
+} );
+
+$(document).ready( function () {
+    $('#dates').DataTable({
+    "order": [[0, "desc"]]
+    });
 } );
 </script>
 </br></br><h2>Take Today's Attendance</h2>
@@ -19,9 +27,22 @@ $(document).ready( function () {
 
 
 </br></br><h2>Dates</h2>
+<table class="table table-bordered" id="dates">
+<thead>
+<tr>
+<th>Date</th>
+<th data-orderable="false">Month Day</th>
+</tr>
+</thead>
+<tbody>
 {% for d in attendance %}
-	<li><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></li>
+<tr>
+	<td><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
+	<td> {{ d.date|date:"D M d" }} </td>	
+</tr>
 {% endfor %}
+</tbody>
+</table>
 
 </br></br><h2>Students</h2>
 <table class="table table-bordered" id="students">
