@@ -54,11 +54,17 @@ def courseHome(request, course_id):
                                 for s in course.student_list.all():
                                         AttendanceRecord.objects.create(courseid=course.id,user=s,studentusername=s.username,date=date.today())
                                 #create course code for added day with given time
-
                                 c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
-                                while CourseCode.objects.filter(code=c).count() > 0:
-                                        c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
-                                d=datetime.datetime.now() + datetime.timedelta(0,0,0,0,int(saved['time']))
+                                
+                                matches=1
+                                while matches != 0:
+                                        while CourseCode.objects.filter(code=c).count() > 0:
+                                                 c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
+                                        d=datetime.datetime.now() + datetime.timedelta(0,0,0,0,int(saved['time']))
+                                
+                                        f=CourseCode.objects.filter(code=c, codedate=date.today())
+                                        matches=f.count()
+
                                 CourseCode.objects.create(code=c,courseid=course.id,expirationtime=d).save()
                                 return redirect('courseHome',
                                         course_id=course_id,
