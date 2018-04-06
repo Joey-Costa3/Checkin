@@ -233,7 +233,10 @@ def studentSignIn(request):
                                 attObj.status = 'P'
                                 attObj.signin = currTime
                         except ObjectDoesNotExist:
-                                return render(request, 'attendance/noMatchingAttRecordFailure.html')
+                                student = settings.GET_USER_BY_USERNAME(request.user.username)
+                                course.student_list.add(student)
+                                AttendanceRecord.objects.create(courseid=course_id,user=student,studentusername=student.username,date=date.today(),status='P',signin=currTime)
+                                return render(request, 'attendance/success.html')
 
                         attObj.save()
                         return render(request, 'attendance/success.html')
