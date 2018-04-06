@@ -36,11 +36,11 @@ def instructorHome(request, user_id):
 
 @login_required
 def courseHome(request, course_id):
-        course = get_object_or_404(Course, name=course_id)        
+        course = get_object_or_404(Course, name=course_id)
         if not validateUser(request.user, user=request.user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('loginURL')
-        
+
         c = "11111"
         DIGITS = '123456789'
         # generate attendance records for added day
@@ -55,13 +55,13 @@ def courseHome(request, course_id):
                                         AttendanceRecord.objects.create(courseid=course.id,user=s,studentusername=s.username,date=date.today())
                                 #create course code for added day with given time
                                 c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
-                                
+
                                 matches=1
                                 while matches != 0:
                                         while CourseCode.objects.filter(code=c).count() > 0:
                                                  c=''.join(random.choice(string.ascii_uppercase + DIGITS) for _ in range(5))
                                         d=datetime.datetime.now() + datetime.timedelta(0,0,0,0,int(saved['time']))
-                                
+
                                         f=CourseCode.objects.filter(code=c, codedate=date.today())
                                         matches=f.count()
 
@@ -160,7 +160,7 @@ def editCourse(request, course_id):
         if not validateUser(request.user, user=user, course=newc):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('loginURL')
-        
+
         if request.method == 'POST':
                 form = UpdateCourse(request.POST)
                 if form.is_valid():
@@ -227,7 +227,7 @@ def studentSignIn(request):
 
                         # update attendance record for user in that course
                         try:
-                                attObj = AttendanceRecord.objects.get(courseid=course_id, 
+                                attObj = AttendanceRecord.objects.get(courseid=course_id,
                                         studentusername=request.user.username,
                                         date=date)
                                 attObj.status = 'P'
@@ -241,8 +241,14 @@ def studentSignIn(request):
                         attObj.save()
                         return render(request, 'attendance/success.html')
 
-        # we're not processing a code entry so just have to define the form to display
+        # display the form and also display the students attendance records
         else:
                 form = CodeEntryForm()
+                # get every attendance record for our student
+                student_records = AttendanceRecord.objects.filter(studentusername=request.user.username).order_by('date')
+                # change the 'courseid' field to actually grab the course display name
+                for r in student_records:
+                    r.courseid = Course.objects.get(pk=r.courseid).display_name;
 
-        return render(request, 'attendance/studentSignIn.html', {'form': form})
+        # pass back this list before rendering page. Display info in html
+        return render(request, 'attendance/studentSignIn.html', {'form': form, 'records': student_records})
