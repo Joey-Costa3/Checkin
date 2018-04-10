@@ -1,0 +1,45 @@
+{% extends "attendance/base.html" %}
+
+{% block titleModifier %}
+	- History
+{% endblock %}
+
+
+{% block headerTitle %}
+  History
+{% endblock %}
+
+
+{% block headerParagraph %}
+   View your SoC Checkin attendance history below.
+{% endblock %}
+
+
+{% block bodyContent %}
+<script>
+$(document).ready( function () {
+    $("#students-attendance-history-table").DataTable({
+    "order": [[0, "desc"]]
+    });
+} );
+</script>
+
+<table class="table table-striped" id="students-attendance-history-table">
+<thead>
+<tr>
+<th>Date</th>
+<th>Course</th>
+<th>Record</th>
+</tr>
+</thead>
+<tbody>
+{% for r in records  %}
+	<tr>
+  <td>{{ r.date|date:"D M d" }} </td>
+	<td>{{ r.courseid }} </td>
+	<td>{{ r.status }} </td>
+	</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}

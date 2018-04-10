@@ -18,6 +18,9 @@ from .forms import *
 
 from .helpers import validateUser
 
+def permissionDenied(request):
+    return render(request, 'attendance/permissionDenied.html')
+
 @login_required
 def logout(request):
         messages.info(request, 'You have been logged out sucessfully.')
@@ -28,10 +31,14 @@ def instructorHome(request, user_id):
         user = get_object_or_404(User, username=user_id)
         if not validateUser(request.user, user=user):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
-                return redirect('loginURL')
+                return redirect('permissionDeniedURL')
 
         instructor=get_object_or_404(User,username=user_id)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
+        if len(c_list) == 0:
+            messages.error(request, "You are not an instructor for any courses")
+            return redirect('permissionDeniedURL')
+
         return render(request, 'attendance/instructor.html', {'instructor': instructor, 'courses': c_list})
 
 @login_required
@@ -39,10 +46,12 @@ def courseHome(request, course_id):
         course = get_object_or_404(Course, name=course_id)
         if not validateUser(request.user, user=request.user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
-                return redirect('loginURL')
+                return redirect('permissionDeniedURL')
 
+        inProgress=None;
         c = "11111"
         DIGITS = '123456789'
+        endtime = date.today()
         # generate attendance records for added day
         if request.method == 'POST':
                 form=CourseHome(request.POST)
@@ -66,18 +75,24 @@ def courseHome(request, course_id):
                                         matches=f.count()
 
                                 CourseCode.objects.create(code=c,courseid=course.id,expirationtime=d).save()
-                                return redirect('courseHome',
+                                return redirect('courseHomeURL',
                                         course_id=course_id,
                                 )
                         else:
-                                messages.info(request, 'Attendance in progress: <span id="codeBlock">' + coursecode.first().code + '</span>', extra_tags='safe')
+                                #messages.info(request, 'Attendance in progress with code: ' + coursecode.first().code)
+                                c=coursecode.first().code
+                                endtime=coursecode.first().expirationtime
+                                inProgress=True
                 else:
                         messages.info(request, 'INVALID')
         else:
                 form = CourseHome(initial = { 'time': course.checkinwindow })
                 coursecode = CourseCode.objects.filter(codedate=date.today()).filter(courseid=course.id)
                 if coursecode.count() > 0:
-                        messages.info(request, 'Attendance in progress: <span id="codeBlock">' + coursecode.first().code + '</span>', extra_tags='safe')
+                        #messages.info(request, 'Attendance in progress with code: ' + coursecode.first().code)
+                        c=coursecode.first().code
+                        endtime=coursecode.first().expirationtime
+                        inProgress=True
                 else:
                         messages.info(request, 'Attendance not yet started for today')
         student_list = [[]]
@@ -87,7 +102,8 @@ def courseHome(request, course_id):
         d_list=AttendanceRecord.objects.filter(courseid=course.id).values('date').distinct().order_by('-date')
         instructor=get_object_or_404(User,username=request.user.username)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
-        return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor, 'courses': c_list, 'form':form, 'students': student_list})
+        return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor,
+            'courses': c_list, 'form':form, 'students': student_list, 'inProgress': inProgress, 'endtime':endtime})
 
 @login_required
 def attendance(request, course_id, day):
@@ -101,8 +117,9 @@ def attendance(request, course_id, day):
 
         if not validateUser(request.user, user=user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
-                return redirect('loginURL')
-        return render(request, 'attendance/attendance.html', {'course_id': course_id, 'day': day,'recordList':s_list, 'instructor': user, 'courses': c_list})
+                return redirect('permissionDeniedURL')
+        return render(request, 'attendance/courseAttendanceByDay.html', {'course': course, 'course_id': course_id, 'day': day,'recordList':s_list,
+            'instructor': user, 'courses': c_list})
 
 @login_required
 def studentAttendance(request, course_id, user_id):
@@ -119,8 +136,9 @@ def studentAttendance(request, course_id, user_id):
 
         if not validateUser(request.user, user=user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
-                return redirect('loginURL')
-        return render(request, 'attendance/studentAttendance.html', {'course_id': course_id, 'student': user_id, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total})
+                return redirect('permissionDeniedURL')
+        return render(request, 'attendance/courseAttendanceByStudent.html', {'course': course, 'course_id': course_id,
+            'student': user_id, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total})
 @login_required
 
 def editAttendance(request, user_id, course_id, day):
@@ -133,7 +151,7 @@ def editAttendance(request, user_id, course_id, day):
 
         if not validateUser(request.user, user=user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
-                return redirect('loginURL')
+                return redirect('permissionDeniedURL')
         #updating atttendance after change is submitted by instructor
         if request.method == 'POST':
                 formset=RecordFormset(request.POST)
@@ -159,7 +177,7 @@ def editCourse(request, course_id):
         user = get_object_or_404(User, username=request.user.username)
         if not validateUser(request.user, user=user, course=newc):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
-                return redirect('loginURL')
+                return redirect('permissionDeniedURL')
 
         if request.method == 'POST':
                 form = UpdateCourse(request.POST)
@@ -192,12 +210,12 @@ def editCourse(request, course_id):
                 })
         instructor=get_object_or_404(User,username=request.user.username)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
-        return render(request, 'attendance/editCourse.html',
-                {'course_id': course_id, 'form': form, 'instructor': instructor, 'courses': c_list}
+        return render(request, 'attendance/courseEdit.html',
+                {'course_id': course_id, 'form': form, 'instructor': instructor, 'courses': c_list, 'course':newc}
         )
 
 @login_required
-def studentSignIn(request):
+def studentCheckIn(request):
 
         # we're processing a code entry
         if request.method == 'POST':
@@ -212,13 +230,15 @@ def studentSignIn(request):
                         try:
                                 codeObj = CourseCode.objects.get(code=newCode)
                         except ObjectDoesNotExist:
-                                return render(request, 'attendance/failure.html')
+                                messages.error(request, "Course code entered incorrectly. Please go back and try again.")
+                                return render(request, 'attendance/studentCheckIn.html', {'form': form})
 
                         # check for expiration
                         expireTime = codeObj.expirationtime
                         currTime = datetime.datetime.now()
                         if currTime > expireTime:
-                                return render(request, 'attendance/codeExpiredFailure.html')
+                                messages.error(request, "This attendance code has expired.")
+                                return render(request, 'attendance/studentCheckIn.html', {'form': form})
 
                         # get course associated w/ code
                         course = codeObj.getCourse()
@@ -229,26 +249,42 @@ def studentSignIn(request):
                         try:
                                 attObj = AttendanceRecord.objects.get(courseid=course_id,
                                         studentusername=request.user.username,
-                                        date=date)
+                                        date=date.today())
+                                if attObj.status == 'P':
+                                    messages.info(request, 'You have already checked into this course')
+                                    return render(request, 'attendance/studentCheckIn.html', {'form': form})
                                 attObj.status = 'P'
                                 attObj.signin = currTime
                         except ObjectDoesNotExist:
+                                # add student to the course and mark them as present for today
                                 student = settings.GET_USER_BY_USERNAME(request.user.username)
                                 course.student_list.add(student)
                                 AttendanceRecord.objects.create(courseid=course_id,user=student,studentusername=student.username,date=date.today(),status='P',signin=currTime)
-                                return render(request, 'attendance/success.html')
+                                # check to see if they missed the first x classes and mark them as unexcused for those days
+                                records = CourseCode.objects.filter(courseid=course_id).exclude(codedate=date.today()).order_by('codedate')
+                                for r in records:
+                                    AttendanceRecord.objects.create(courseid=course_id,user=student,studentusername=student.username,date=r.codedate,status='U')
+                                messages.success(request, 'Your attendance has been recorded for ' + course.display_name + ' on ' + datetime.date.today().strftime("%d-%m-%y"))
+                                return render(request, 'attendance/studentCheckIn.html', {'form': form})
 
                         attObj.save()
-                        return render(request, 'attendance/success.html')
+                        messages.success(request, 'Your attendance has been recorded for ' + course.display_name + ' on ' + datetime.date.today().strftime("%d-%m-%y"))
+                        return render(request, 'attendance/studentCheckIn.html', {'form': form})
 
         # display the form and also display the students attendance records
         else:
                 form = CodeEntryForm()
-                # get every attendance record for our student
-                student_records = AttendanceRecord.objects.filter(studentusername=request.user.username).order_by('date')
-                # change the 'courseid' field to actually grab the course display name
-                for r in student_records:
-                    r.courseid = Course.objects.get(pk=r.courseid).display_name;
 
         # pass back this list before rendering page. Display info in html
-        return render(request, 'attendance/studentSignIn.html', {'form': form, 'records': student_records})
+        return render(request, 'attendance/studentCheckIn.html', {'form': form})
+
+@login_required
+def studentViewAttendance(request):
+        # get every attendance record for our student
+        student_records = AttendanceRecord.objects.filter(studentusername=request.user.username).order_by('-date')
+
+        # change the 'courseid' field to actually grab the course display name
+        for r in student_records:
+                r.courseid = Course.objects.get(pk=r.courseid).display_name;
+        # pass back this list before rendering page. Display info in html
+        return render(request, 'attendance/studentViewAttendance.html', {'records': student_records})

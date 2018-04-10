@@ -1,0 +1,20 @@
+{% extends "attendance/base.html" %}
+
+{% block titleModifier %}
+	- Check In
+{% endblock %}
+
+
+{% block headerTitle %}
+	Check In
+{% endblock %}
+
+
+{% block headerParagraph %}
+  Enter the course code provided by your professor to check in to your class
+{% endblock %}
+
+
+{% block bodyContent %}
+  {% include "attendance/form.html" with form=form %}
+{% endblock %}

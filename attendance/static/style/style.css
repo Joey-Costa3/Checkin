@@ -1,3 +1,12 @@
+#navbar-username{
+  color: #212529
+}
+
+body {
+  bgcolor: white
+}
+
+/*
 html, body
 { height: 100%;}
 
@@ -334,3 +343,5 @@ table tr td
   text-align: center;
   width: 50px;
 }
+
+*/

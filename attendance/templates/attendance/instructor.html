@@ -1,8 +1,22 @@
-{% extends "attendance/instructorBase.html" %}
+{% extends "attendance/base.html" %}
 
-{% block content %}
-<h1>SoC Checkin</h1>
-<p>Select a course on the left.</p>
-
+{% block titleModifier %}
+	- {{instructor}}
 {% endblock %}
 
+
+{% block headerTitle %}
+	Select A Course
+{% endblock %}
+
+
+{% block headerParagraph %}
+  Select a course to set a code and view the attendance history.
+{% endblock %}
+
+
+{% block bodyContent %}
+  {% for c in courses %}
+  <a href="{% url 'courseHomeURL' c.name %}">{{c.display_name}}</a>
+  {% endfor %}
+{% endblock %}

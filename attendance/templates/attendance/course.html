@@ -1,67 +1,88 @@
-{% extends "attendance/instructorBase.html" %}
+{% extends "attendance/base.html" %}
 
-{% block content %}
-<a href="{% url 'editCourseURL' course.name %}"><h4 id="editCourse">Edit Course</h4></a>
-<h1 style="font-size: 30px;">{{ course.display_name }}</h1>
+{% block titleModifier %}
+	- {{course.name}}
+{% endblock %}
+
+
+{% block headerTitle %}
+	{{course.display_name}}
+{% endblock %}
+
+
+{% block headerParagraph %}
+  <a href="{% url 'courseHomeURL' course.name %}">Course Home</a>
+  <br>
+  <a href="{% url 'editCourseURL' course.name %}">Edit Course</a>
+	<br>
+{% endblock %}
+
+{# // scripts for table sorting #}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
 
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 
 <script>
-
 $(document).ready( function () {
-    $('#students').DataTable({
+    $('#course-students-table').DataTable({
     paging: false
     });
 } );
 
 $(document).ready( function () {
-    $('#dates').DataTable({
+    $('#course-dates-table').DataTable({
     "order": [[0, "desc"]]
     });
 } );
 </script>
 
-</br></br><h2>Take Today's Attendance</h2>
-{% include "attendance/form.html" with form=form %}
+{% block bodyContent %}
+  <h4>Take Today's Attendance</h4>
+	{% if inProgress %}
+		<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
+	{% else %}
+  	{% include "attendance/form.html" with form=form %}
+	{% endif %}
 
+  </br></br>
+  <h4>Dates</h4>
+  <table class="table table-bordered" id="course-dates-table">
+  <thead>
+  <tr>
+  <th>Date</th>
+  <th data-orderable="false">Month Day</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for d in attendance %}
+  <tr>
+  	<td><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
+  	<td> {{ d.date|date:"D M d" }} </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
 
-</br></br><h2>Dates</h2>
-<table class="table table-bordered" id="dates">
-<thead>
-<tr>
-<th>Date</th>
-<th data-orderable="false">Month Day</th>
-</tr>
-</thead>
-<tbody>
-{% for d in attendance %}
-<tr>
-	<td><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
-	<td> {{ d.date|date:"D M d" }} </td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+  </br></br>
+  <h4>Students</h4>
+  <table class="table table-bordered" id="course-students-table">
+  <thead>
+  <tr>
+  <th>Username</th>
+  <th>First Name</th>
+  <th>Last Name</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for s in students  %}
+  	<tr>
+  	<td><a href="{% url 'courseStudentAttendanceURL' course.name s.username %}">{{ s.username }}</a></td>
+  	<td>{{ s.first_name }} </td>
+  	<td>{{ s.last_name }} </td>
+  	</tr>
+  {% endfor %}
+  </tbody>
+  </table>
 
-</br></br><h2>Students</h2>
-<table class="table table-bordered" id="students">
-<thead>
-<tr>
-<th>Username</th>
-<th>First Name</th>
-<th>Last Name</th>
-</tr>
-</thead>
-<tbody>
-{% for s in students  %}
-	<tr>
-	<td><a href="{% url 'courseStudentAttendanceURL' course.name s.username %}">{{ s.username }}</a></td>
-	<td>{{ s.first_name }} </td>
-	<td>{{ s.last_name }} </td>
-	</tr>
-{% endfor %}
-</tbody>
-</table>
 {% endblock %}

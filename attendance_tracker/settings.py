@@ -34,7 +34,7 @@ SECRET_KEY = 'SECRET KEY'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['thethomasrea.dynu.com','192.168.2.212']
+ALLOWED_HOSTS = ['192.168.1.148']
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
@@ -43,7 +43,7 @@ AUTO_LOGOUT_DELAY = 30
 # Application definition
 
 LOGIN_URL = 'loginURL'
-LOGIN_REDIRECT_URL = 'studentSignInURL'
+LOGIN_REDIRECT_URL = 'studentCheckInURL'
 
 INSTALLED_APPS = (
     'attendance',
@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap4',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -193,4 +194,3 @@ def GET_USER_BY_USERNAME(username):
     if user is None:
       raise User.DoesNotExist('%s not in LDAP or database' % username)
     return user
-

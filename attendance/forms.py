@@ -52,7 +52,7 @@ class NamesTextarea(forms.CharField):
                         #        raise ValidationError(
                         #                _(self.default_error_messages['invalid']),
                         #                code='invalid',
-                        #        )        
+                        #        )
 
 class UpdateCourse(forms.Form):
         class Meta:
@@ -77,4 +77,3 @@ class LoginForm(forms.Form):
 
 class CodeEntryForm(forms.Form):
     code = forms.CharField(label=mark_safe('<p class="formLabel">Course Code</p>'), label_suffix="", max_length=5)
-

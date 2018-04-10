@@ -1,15 +1,34 @@
 {% extends "attendance/base.html" %}
 
-{% block content %}
+{% block titleModifier %}
+	- Login
+{% endblock %}
 
-<h1>Login - with Clemson Username/Password</h1>
-{% if next %}
-<form action="/login/?next={{next}}" method="post" >
-{% else %}
-<form action="/login/" method="post" >
-{% endif %}
-	{% csrf_token %}
-	{{ form.as_p }}
-	<input type="submit" value="Submit" onclick="this.disabled=true; this.form.submit()"/>
-</form>
+
+{% block headerTitle %}
+	Login
+{% endblock %}
+
+
+{% block headerParagraph %}
+  Using your Clemson credentials
+{% endblock %}
+
+
+{% block bodyContent %}
+	<div class="text-center">
+	{% if request.user.is_authenticated %}
+			<p>You are already logged in</p>
+	{% else %}
+			{% if next %}
+				<form action="/login/?next={{next}}" method="post">
+			{% else %}
+				<form action="/login/" method="post">
+			{% endif %}
+			{% csrf_token %}
+			{{ form.as_p }}
+			<input type="submit" value="Submit" onclick="this.disabled=true; this.form.submit()"/>
+		</form>
+	{% endif %}
+	</div>
 {% endblock %}

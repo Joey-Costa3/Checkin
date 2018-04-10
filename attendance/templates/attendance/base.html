@@ -1,39 +1,119 @@
+<!--
+base
+- Login
+- instructor Home ()
+- - courseHome
+- studenthome
+
+
+-->
+
 <!DOCTYPE HTML>
 <html>
 
+{% load bootstrap4 %}
+
 <head>
-  <title>SoC Checkin</title>
+  {# // override this block with a "- Page Title" #}
+  <title>SoC Checkin{% block titleModifier %}{% endblock %}</title>
+
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+
   {% load static %}
+  {# // Bootstrap core CSS #}
+  <link rel="stylesheet" type="text/css" href="https://getbootstrap.com/dist/css/bootstrap.min.css" />
+  {# // jquery data table css #}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css" />
+  {# // Appending our own CSS #}
   <link rel="stylesheet" type="text/css" href="{% static "style/style.css" %}" title="style" />
+
+  {# // load jQuery for our tables. If we load at bottom, the '$' wont register #}
+  <script type="text/javascript" src="{% static "jquery-3.3.1.min.js" %}"></script>
 </head>
 
 <body>
-  <div id="main">
-    <div id="header">
-      <div id="logo">
-        <div id="logo_text">
-          <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="/login">SoC Checkin</a></h1>
-        </div>
-      </div>
-    </div>
-    <div id="site_content">
-      <div id="content" style="width:100%;">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" id="base-navbar">
+    <a class="navbar-brand">
+      <img src={% static "images/TigerPaw.png" %} width="30" height="30" class="d-inline-block align-top" alt="">SoC Checkin</a>
+
+    {% if request.user.is_authenticated %}
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#base-navbar-collapse" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="base-navbar-collapse">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropDown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Student
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropDown1">
+              <a class="dropdown-item" href="{% url 'studentCheckInURL' %}">Checkin</a>
+              <a class="dropdown-item" href="{% url 'studentAttendanceHistoryURL' %}">Attendance History</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Instructor
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropDown2">
+              <a class="dropdown-item" href="{% url 'instructorURL' user_id=request.user.username %}">Courses</a>
+            </div>
+          </li>
         </ul>
-        {% endif %}
-        {% block content %}
-        {% endblock %}
+        <span class="navbar-text" id="navbar-username"><a href="{% url 'logoutURL' %}">Logout as {{ request.user.username }}</a></span>
       </div>
+    {% endif %}
+  </nav>
+
+  <div class="container" id="body-container">
+    {# // override this block for custom alerts above the page heading #}
+    {% block alerts %}
+      {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              {% if message.tags == "success" %}
+                <div class="alert alert-success alert-dismissible">{{ message }}</p>
+              {% elif message.tags == "warning" %}
+                <div class="alert alert-warning alert-dismissible">{{ message }}</p>
+              {% elif message.tags == "error" %}
+                <div class="alert alert-danger alert-dismissible">{{ message }}</p>
+              {% elif message.tags == "info" %}
+                <div class="alert alert-info alert-dismissible">{{ message }}</p>
+              {% endif %}
+            {% else %}
+              <div class="alert alert-info alert-dismissible">{{ message }}</p>
+            {% endif %}
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            </div>
+          {% endfor %}
+      {% endif %}
+    {% endblock %}
+
+    {# // override this block if you want a custom header #}
+    {% block header %}
+      <div class="header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center" id="base-header">
+        <h1 class="display-4">{% block headerTitle %}{% endblock %}</h1>
+        <p class="lead">{% block headerParagraph %}{% endblock %}</p>
+      </div>
+    {% endblock %}
+
+    {# // override this block with page content #}
+    <div class="body px-1 py-1 pt-md-1 pb-md-1 mx-auto text-center" id="base-body">
+    {% block bodyContent %}
+    {% endblock %}
     </div>
   </div>
-</body>
-</html>
 
+  {# // Bootstrap core JavaScript - Placed at the end of the document so the pages load faster #}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+
+</body>
+
+
+</html>
