@@ -18,10 +18,8 @@
 {% endblock %}
 
 {# // scripts for table sorting #}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
 
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+{% block bodyContent %}
 
 <script>
 $(document).ready( function () {
@@ -37,7 +35,6 @@ $(document).ready( function () {
 } );
 </script>
 
-{% block bodyContent %}
   <h4>Take Today's Attendance</h4>
 	{% if inProgress %}
 		<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
