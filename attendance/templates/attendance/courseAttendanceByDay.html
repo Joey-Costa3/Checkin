@@ -12,7 +12,44 @@
 
 <div id="csvshit">
 
-<textarea id="txt" class="txtarea hidden" aria-label="CSV File Text">[{"id":"1","title":"Some Shit"},{"id":"2","title":"Some Other shit"}]</textarea>
+{% comment %}
+When formatting the CSV file it must be 
+[{"TITLE_HEADER":"VALUE","NEXT_TITLE_HEADER":"NEXT_VALUE},{"NEW_RECORD_TITLE_HEADER":"VALUE","NEW_RECORD_NEXT_TITLE_HEADER":"VALUE"}]
+
+basically it is a json object that the Javascript will then parse and save into a CSV File
+Make sure when creating the json object to not have an extraneous comma at the last record. That is we check to see if we are at the end of the 
+for loop and only add a comma if it is not the last record
+
+Outside the for loop have square braces
+[
+// for loop
+]
+
+inside the for loop begin with curly braces
+{
+// data 
+}
+
+inside the data begin with column headers in quotes
+"Column"
+Then to relate the header to a value use a colon
+:
+Finally in quotes place the data itself
+"Value"
+
+{% endcomment %}
+<textarea id="txt" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+[
+{% for record in recordList %}
+{"username":"{{ record.studentusername|safe }}","firstname":"{{ record.user.first_name|safe }}"}
+{% if forloop.last %}
+
+{% else %}
+,
+{% endif %}
+{% endfor %}
+]
+</textarea>
 <br><button id="download">Download CSV</button>
 </div>
   <h3>Attendance for Course {{ course_id }} on {{ day }}</h3>
