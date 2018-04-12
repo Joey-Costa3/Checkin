@@ -41,12 +41,8 @@ Finally in quotes place the data itself
 <textarea id="txt" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
 [
 {% for record in recordList %}
-{"username":"{{ record.studentusername|safe }}","firstname":"{{ record.user.first_name|safe }}"}
-{% if forloop.last %}
+{"user_id":"{{ record.user_id|safe }}","courseId":"{{ record.courseId|safe }}","username":"{{ record.studentusername|safe }}","date":"{{ record.date|safe }}","signIn":"{{ record.signIn|safe }}","status":"{{ record.status|safe }}","first_name":"{{ record.user.first_name|safe }}","last_name":"{{ record.user.last_name|safe }}"}
 
-{% else %}
-,
-{% endif %}
 {% endfor %}
 ]
 </textarea>

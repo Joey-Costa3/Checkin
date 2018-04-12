@@ -215,6 +215,10 @@ def editCourse(request, course_id):
         )
 
 @login_required
+def exportCSV(request, course_id):
+        attendance = AttendanceRecords.objects.filter(courseid = course_id).order_by('-date');
+
+@login_required
 def studentCheckIn(request):
 
         # we're processing a code entry

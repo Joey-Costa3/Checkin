@@ -34,7 +34,7 @@ SECRET_KEY = 'SECRET KEY'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.148']
+ALLOWED_HOSTS = ['192.168.1.148', '0.0.0.0']
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
