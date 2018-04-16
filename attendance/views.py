@@ -133,12 +133,12 @@ def studentAttendance(request, course_id, user_id):
         absent=total-present
 
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
-
+        student = settings.GET_USER_BY_USERNAME(user_id)
         if not validateUser(request.user, user=user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
         return render(request, 'attendance/courseAttendanceByStudent.html', {'course': course, 'course_id': course_id,
-            'student': user_id, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total})
+            'student': student, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total, 'p': present})
 @login_required
 
 def editAttendance(request, user_id, course_id, day):

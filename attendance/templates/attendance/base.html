@@ -121,10 +121,11 @@ base
         	var data = $('#txt').val();
         	if(data == '')
         	    return;
-        	var title = "Reports_";
+        	    var name = $('#txt').attr("name");
+        	var title = name;
         	var date = new Date().toLocaleString();
         	var endTitle = date.concat("");
-        	JSONToCSVConvertor(data, title.concat(endTitle), true);
+        	JSONToCSVConvertor(data, title, true);
    	 });
 	});
 	function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
@@ -170,7 +171,7 @@ base
     }   
     
     //Generate a file name
-    var fileName = "Attendance_";
+    var fileName = "CheckinAttendance_";
     //this will remove the blank-spaces from the title and replace it with an underscore
     fileName += ReportTitle.replace(/ /g,"_");   
     

@@ -38,11 +38,11 @@ Finally in quotes place the data itself
 "Value"
 
 {% endcomment %}
-<textarea id="txt" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+<textarea id="txt" name="{{ course_id }}_{{ day|safe }}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
 [
 {% for record in recordList %}
 
-{"CUID":"{{ record.user_id|safe }}","Username":"{{ record.studentusername|safe }}","Course":"{{ course_id|safe }}","Date":"{{ record.date|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}","Name":"{{ record.user.first_name|safe }} {{ record.user.last_name|safe }}"}
+{"CUID":"{{ record.user_id|safe }}","Username":"{{ record.studentusername|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}","Name":"{{ record.user.first_name|safe }} {{ record.user.last_name|safe }}"}
 
 {% if forloop.last %}
 
