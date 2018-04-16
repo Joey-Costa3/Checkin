@@ -24,6 +24,35 @@ $(document).ready( function () {
 } );
 </script>
 
+<div id="csvarea">
+
+
+<textarea id="txt"  name="{{ username }}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+[
+{% for record in records %}
+{# // After appending all records from the same course insert a blank section. Then add data from next course #}
+{% ifchanged record.courseid %}
+{% if forloop.first %}
+{% else %}
+{"Course":"","Date":"","Status":""},
+{% endif %}
+{"Course":"{{ record.courseid|safe }}","Date":"{{ record.date|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}"}
+{% else %}
+{"Course":"{{ record.courseid|safe }}","Date":"{{ record.date|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}"}
+{% endifchanged %}
+
+{% if forloop.last %}
+
+{% else %}
+,
+{% endif %}
+{% endfor %}
+]
+</textarea>
+<br><button id="download">Download CSV</button>
+</div>
+
+
 <table class="table table-striped" id="students-attendance-history-table">
 <thead>
 <tr>

@@ -285,10 +285,11 @@ def studentCheckIn(request):
 @login_required
 def studentViewAttendance(request):
         # get every attendance record for our student
-        student_records = AttendanceRecord.objects.filter(studentusername=request.user.username).order_by('-date')
+        student_records = AttendanceRecord.objects.filter(studentusername=request.user.username).order_by('courseid', '-date')
 
         # change the 'courseid' field to actually grab the course display name
         for r in student_records:
                 r.courseid = Course.objects.get(pk=r.courseid).display_name;
+                
         # pass back this list before rendering page. Display info in html
-        return render(request, 'attendance/studentViewAttendance.html', {'records': student_records})
+        return render(request, 'attendance/studentViewAttendance.html', {'records': student_records, 'username': request.user.username})
