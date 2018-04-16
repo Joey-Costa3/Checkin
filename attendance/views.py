@@ -102,6 +102,16 @@ def courseHome(request, course_id):
         d_list=AttendanceRecord.objects.filter(courseid=course.id).values('date').distinct().order_by('-date')
         instructor=get_object_or_404(User,username=request.user.username)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
+        # with the dates we will then get all attendance records for each user. These for loops are for formatting the CSV file for a class
+        for a in d_list:
+                a['usernames']=AttendanceRecord.objects.filter(courseid=course.id).values('studentusername').distinct().order_by('studentusername')
+        for a in d_list:
+                for s in a['usernames']:
+                        f=AttendanceRecord.objects.filter(courseid=course.id,studentusername=s['studentusername'],date=a['date']).values('status')
+                        if not f:
+                                s['attendance']=""
+                        else:
+                                s['attendance']=f[0]['status']
         return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor,
             'courses': c_list, 'form':form, 'students': student_list, 'inProgress': inProgress, 'endtime':endtime})
 

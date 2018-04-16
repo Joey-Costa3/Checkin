@@ -42,24 +42,33 @@ $(document).ready( function () {
   	{% include "attendance/form.html" with form=form %}
 	{% endif %}
 
-  </br></br>
-  {% comment %}
+  <br><br>
 
   <div id="csvarea">
 
 
 
-<textarea id="txt" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+<textarea id="txt" name="{{course.name}}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
 [
-{% for record in recordList %}
-{"user_id":"{{ record.user_id|safe }}","courseId":"{{ record.courseId|safe }}","username":"{{ record.studentusername|safe }}","date":"{{ record.date|safe }}","signIn":"{{ record.signIn|safe }}","status":"{{ record.status|safe }}","first_name":"{{ record.user.first_name|safe }}","last_name":"{{ record.user.last_name|safe }}"}
-
+{% for a in attendance %}
+{"Date":"{{a.date|date:"Y-m-d"}}",
+	{% for s in a.usernames %}
+		"{{s.studentusername}}":"{% if s.attendance == 'P' %}Present{% elif s.attendance == 'U' %}Unexcused{% elif s.attendance == 'E' %}Excused{% elif s.attendance == 'T' %}Tardy{% else %}{% endif %}"
+		{% if forloop.last %}
+		}
+		{% else %}
+		,
+		{% endif %}
+	{% endfor %}
+	{% if forloop.last %}
+	{% else %}
+	,
+	{% endif %}
 {% endfor %}
 ]
 </textarea>
 <br><button id="download">Download CSV</button>
 </div>
-  {% endcomment %}
   
   <h4>Dates</h4>
   <table class="table table-striped" id="course-dates-table">
