@@ -1,5 +1,13 @@
 {% extends "attendance/course.html" %}
 
+{% block headerParagraph %}
+	This is the attendance history for {{ student.username }} ({{ student.first_name }} {{ student.last_name }})
+	<br><br>
+	{{ a }}/{{ t }} (absent/#classes)
+	<br>
+	Attendance {% widthratio p t 100 %}%
+{% endblock %}
+
 {% block bodyContent %}
 	<script>
 	$(document).ready( function () {
@@ -9,53 +17,46 @@
 	} );
 	</script>
 
+	<div>
+		Download CSV file containing the entire attendance history for {{student.username}}
+		<br>
+		<button class="btn btn-secondary btn-sm" id="download">Download</button>
 
+		<textarea id="txt"  name="{{ course_id }}_{{ student.username }}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+		[
+		{% for record in recordList %}
 
+		{"Date":"{{ record.date|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}"}
 
-<div id="csvarea">
+		{% if forloop.last %}
 
+		{% else %}
+		,
+		{% endif %}
+		{% endfor %}
+		]
+		</textarea>
+	</div>
 
-<textarea id="txt"  name="{{ course_id }}_{{ student.username }}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
-[
-{% for record in recordList %}
+	<hr>
 
-{"Date":"{{ record.date|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}"}
-
-{% if forloop.last %}
-
-{% else %}
-,
-{% endif %}
-{% endfor %}
-]
-</textarea>
-<br><button id="download">Download CSV</button>
-</div>
-<!-- 
-	<h4>Attendance for Course {{ course_id }}</h4>
- -->
-	<h4>Student: 
-	<br>{{ student.username }} ({{ student.first_name }} {{ student.last_name }})
-	</h4>
-	<p> {{ a }}/{{ t }}(absent/#classes)<br>
-	Attendance {% widthratio p t 100 %}%</p>
-	<table class="table table-striped" id="course-student-attendance-table">
-	<thead>
-	<tr>
-	<th>Date</th>
-	<th>Status</th>
-	</tr>
-	</thead>
-	<tbody>
-	{% for record in recordList  %}
+	<div>
+		<table class="table table-striped" id="course-student-attendance-table">
+		<thead>
 		<tr>
-		<td>{{ record.date|safe }}</td>
-		<td>{{ record.status|safe }} </td>
-
+		<th>Date</th>
+		<th>Status</th>
 		</tr>
-	{% endfor %}
-	</tbody>
+		</thead>
+		<tbody>
+		{% for record in recordList  %}
+			<tr>
+			<td>{{ record.date|safe }}</td>
+			<td>{{ record.status|safe }} </td>
 
-	</table>
-
+			</tr>
+		{% endfor %}
+		</tbody>
+		</table>
+	</div>
 {% endblock %}

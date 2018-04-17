@@ -1,5 +1,9 @@
 {% extends "attendance/course.html" %}
 
+{% block headerParagraph %}
+	This is the attendance history for {{ course_id }} on {{ day }}
+{% endblock %}
+
 {% block bodyContent %}
 
   <script>
@@ -10,72 +14,76 @@
   } );
   </script>
 
-<div id="csvarea">
 
-{% comment %}
-When formatting the CSV file it must be 
-[{"TITLE_HEADER":"VALUE","NEXT_TITLE_HEADER":"NEXT_VALUE},{"NEW_RECORD_TITLE_HEADER":"VALUE","NEW_RECORD_NEXT_TITLE_HEADER":"VALUE"}]
+  <div>
+    {% comment %}
+    When formatting the CSV file it must be
+    [{"TITLE_HEADER":"VALUE","NEXT_TITLE_HEADER":"NEXT_VALUE},{"NEW_RECORD_TITLE_HEADER":"VALUE","NEW_RECORD_NEXT_TITLE_HEADER":"VALUE"}]
 
-basically it is a json object that the Javascript will then parse and save into a CSV File
-Make sure when creating the json object to not have an extraneous comma at the last record. That is we check to see if we are at the end of the 
-for loop and only add a comma if it is not the last record
+    basically it is a json object that the Javascript will then parse and save into a CSV File
+    Make sure when creating the json object to not have an extraneous comma at the last record. That is we check to see if we are at the end of the
+    for loop and only add a comma if it is not the last record
 
-Outside the for loop have square braces
-[
-// for loop
-]
+    Outside the for loop have square braces
+    [
+    // for loop
+    ]
 
-inside the for loop begin with curly braces
-{
-// data 
-}
+    inside the for loop begin with curly braces
+    {
+    // data
+    }
 
-inside the data begin with column headers in quotes
-"Column"
-Then to relate the header to a value use a colon
-:
-Finally in quotes place the data itself
-"Value"
+    inside the data begin with column headers in quotes
+    "Column"
+    Then to relate the header to a value use a colon
+    :
+    Finally in quotes place the data itself
+    "Value"
 
-{% endcomment %}
-<textarea id="txt" name="{{ course_id }}_{{ day|safe }}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
-[
-{% for record in recordList %}
+    {% endcomment %}
 
-{"CUID":"{{ record.user_id|safe }}","Username":"{{ record.studentusername|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}","Name":"{{ record.user.first_name|safe }} {{ record.user.last_name|safe }}"}
+    Download CSV file containing the attendance history for {{ day }} <br>
+		<button class="btn btn-secondary btn-sm" id="download">Download</button>
+    <textarea id="txt" name="{{ course_id }}_{{ day|safe }}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+      [
+      {% for record in recordList %}
 
-{% if forloop.last %}
+      {"CUID":"{{ record.user_id|safe }}","Username":"{{ record.studentusername|safe }}","Status":"{% if record.status == 'P' %}Present{% elif record.status == 'U' %}Unexcused{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}Tardy{% else %}{% endif %}","Name":"{{ record.user.first_name|safe }} {{ record.user.last_name|safe }}"}
 
-{% else %}
-,
-{% endif %}
-{% endfor %}
-]
-</textarea>
-<br><button id="download">Download CSV</button>
-</div>
-  <h3>Attendance for Course {{ course_id }} on {{ day }}</h3>
+      {% if forloop.last %}
 
-  <table class="table table-striped" id="course-date-attendance-table">
-  <thead>
-  <tr>
-  <th>Username</th>
-  <th>First Name</th>
-  <th>Last Name</th>
-  <th>Status</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for record in recordList  %}
-  	<tr>
-  	<td>{{ record.studentusername|safe }}</td>
-  	<td>{{ record.user.first_name|safe }} </td>
-  	<td>{{ record.user.last_name }} </td>
-  	<td>{{ record.status }} </td>
+      {% else %}
+      ,
+      {% endif %}
+      {% endfor %}
+      ]
+    </textarea>
+  </div>
 
-  	</tr>
-  {% endfor %}
-  </tbody>
+  <hr>
 
-  </table>
+  <div>
+    <table class="table table-striped" id="course-date-attendance-table">
+    <thead>
+    <tr>
+    <th>Username</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for record in recordList  %}
+    	<tr>
+    	<td>{{ record.studentusername|safe }}</td>
+    	<td>{{ record.user.first_name|safe }} </td>
+    	<td>{{ record.user.last_name }} </td>
+    	<td>{{ record.status }} </td>
+
+    	</tr>
+    {% endfor %}
+    </tbody>
+    </table>
+  </div>
 {% endblock %}

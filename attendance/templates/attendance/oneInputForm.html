@@ -1,0 +1,27 @@
+{% load bootstrap4 %}
+
+<style>
+.formLabel {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 0;
+}
+</style>
+
+<form action="{{ request.path }}" method="post">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% bootstrap_button 'Submit' button_class='btn-primary' size='sm' %}
+</form>
+
+
+<!-- THIS IS THE OLD FORM
+{% comment %}
+
+<form action="{{ request.path }}" method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" class="button btn-primary" value="Submit" onclick="this.disabled=true; this.form.submit()"/>
+</form>
+{% endcomment %}
+-->

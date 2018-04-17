@@ -1,4 +1,5 @@
 {% extends "attendance/base.html" %}
+{% load bootstrap4 %}
 
 {% block titleModifier %}
 	- Check In
@@ -16,5 +17,5 @@
 
 
 {% block bodyContent %}
-  {% include "attendance/form.html" with form=form %}
+	{% include "attendance/oneInputForm.html" with form=form %}
 {% endblock %}

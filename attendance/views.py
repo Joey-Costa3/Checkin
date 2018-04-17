@@ -93,8 +93,10 @@ def courseHome(request, course_id):
                         c=coursecode.first().code
                         endtime=coursecode.first().expirationtime
                         inProgress=True
-                else:
-                        messages.info(request, 'Attendance not yet started for today')
+                        # don't need to pass a message
+                #else:
+
+                        #messages.info(request, 'Attendance not yet started for today')
         student_list = [[]]
         for s in course.student_list.all().values():
                 student_list.append(s)
@@ -300,6 +302,6 @@ def studentViewAttendance(request):
         # change the 'courseid' field to actually grab the course display name
         for r in student_records:
                 r.courseid = Course.objects.get(pk=r.courseid).display_name;
-                
+
         # pass back this list before rendering page. Display info in html
         return render(request, 'attendance/studentViewAttendance.html', {'records': student_records, 'username': request.user.username})

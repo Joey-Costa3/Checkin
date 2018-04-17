@@ -1,4 +1,5 @@
 {% extends "attendance/base.html" %}
+{% load bootstrap4 %}
 
 {% block titleModifier %}
 	- Login
@@ -26,9 +27,28 @@
 				<form action="/login/" method="post">
 			{% endif %}
 			{% csrf_token %}
-			{{ form.as_p }}
-			<input type="submit" value="Submit" onclick="this.disabled=true; this.form.submit()"/>
+			{% bootstrap_form form %}
+			{% bootstrap_button 'Submit' button_class='btn-primary' size='sm'%}
 		</form>
 	{% endif %}
 	</div>
 {% endblock %}
+
+
+
+
+
+{% comment %}
+this is the old form
+
+{% if next %}
+	<form action="/login/?next={{next}}" method="post">
+{% else %}
+	<form action="/login/" method="post">
+{% endif %}
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Submit" onclick="this.disabled=true; this.form.submit()"/>
+</form>
+
+{% endcomment %}

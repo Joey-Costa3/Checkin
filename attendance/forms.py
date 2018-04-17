@@ -59,11 +59,11 @@ class UpdateCourse(forms.Form):
                 widgets = {
                         'text': forms.Textarea(attrs={'rows':-45, 'cols':25}),
                 }
-        checkinwindow = TimeInputField(label=mark_safe('<p class="formLabel">Sign In Window (minutes)</p>'), label_suffix="", initial={'code': 15})
-        students = NamesTextarea(label=mark_safe('<p class="formLabel">Students</p>'), label_suffix="", max_length=15*300, required=False)
+        checkinwindow = TimeInputField(label='Sign In Window (minutes)', label_suffix="", initial={'code': 15})
+        students = NamesTextarea(label='Students', label_suffix="", max_length=15*300, required=False)
 
 class CourseHome(forms.Form):
-        time = TimeInputField(label=mark_safe('<p class="formLabel">Sign In Window (minutes)</p>'), label_suffix="", initial={'code': 15})
+        time = TimeInputField(label='Sign In Window (minutes)', label_suffix="", initial={'code': 15})
 
 class AttendanceStatus(forms.ModelForm):
         class Meta:
@@ -76,4 +76,4 @@ class LoginForm(forms.Form):
         password = forms.CharField(widget=forms.PasswordInput)
 
 class CodeEntryForm(forms.Form):
-    code = forms.CharField(label=mark_safe('<p class="formLabel">Course Code</p>'), label_suffix="", max_length=5)
+    code = forms.CharField(label='Course Code', label_suffix="", max_length=5)

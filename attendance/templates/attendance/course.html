@@ -11,10 +11,8 @@
 
 
 {% block headerParagraph %}
-  <a href="{% url 'courseHomeURL' course.name %}">Course Home</a>
-  <br>
-  <a href="{% url 'editCourseURL' course.name %}">Edit Course</a>
-	<br>
+	Click a date or student username to view more details <br>
+  <a class="btn btn-outline-primary btn-sm" href="{% url 'editCourseURL' course.name %}">Edit Course</a>
 {% endblock %}
 
 {# // scripts for table sorting #}
@@ -35,78 +33,90 @@ $(document).ready( function () {
 } );
 </script>
 
-  <h4>Take Today's Attendance</h4>
-	{% if inProgress %}
-		<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
-	{% else %}
-  	{% include "attendance/form.html" with form=form %}
-	{% endif %}
+	<div id="todaysAttendance">
+	  <h4>Take Today's Attendance</h4>
 
-  <br><br>
+		{% if inProgress %}
+			<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
+		{% else %}
+	  	{% include "attendance/oneInputForm.html.html" with form=form %}
+		{% endif %}
+	</div>
+
+	<hr>
 
   <div id="csvarea">
+		Download CSV file containing the entire attendance history for this class
+		<br>
+		<button class="btn btn-secondary btn-sm" id="download">Download</button>
 
+		<textarea id="txt" name="{{course.name}}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
+		[
+		{% for a in attendance %}
+		{"Date":"{{a.date|date:"Y-m-d"}}",
+			{% for s in a.usernames %}
+				"{{s.studentusername}}":"{% if s.attendance == 'P' %}Present{% elif s.attendance == 'U' %}Unexcused{% elif s.attendance == 'E' %}Excused{% elif s.attendance == 'T' %}Tardy{% else %}{% endif %}"
+				{% if forloop.last %}
+				}
+				{% else %}
+				,
+				{% endif %}
+			{% endfor %}
+			{% if forloop.last %}
+			{% else %}
+			,
+			{% endif %}
+		{% endfor %}
+		]
+		</textarea>
+	</div>
 
+	<hr>
 
-<textarea id="txt" name="{{course.name}}" class="txtarea hidden" style="display:none;" aria-label="CSV File Text">
-[
-{% for a in attendance %}
-{"Date":"{{a.date|date:"Y-m-d"}}",
-	{% for s in a.usernames %}
-		"{{s.studentusername}}":"{% if s.attendance == 'P' %}Present{% elif s.attendance == 'U' %}Unexcused{% elif s.attendance == 'E' %}Excused{% elif s.attendance == 'T' %}Tardy{% else %}{% endif %}"
-		{% if forloop.last %}
-		}
-		{% else %}
-		,
-		{% endif %}
-	{% endfor %}
-	{% if forloop.last %}
-	{% else %}
-	,
-	{% endif %}
-{% endfor %}
-]
-</textarea>
-<br><button id="download">Download CSV</button>
-</div>
-  
-  <h4>Dates</h4>
-  <table class="table table-striped" id="course-dates-table">
-  <thead>
-  <tr>
-  <th>Date</th>
-  <th data-orderable="false">Month Day</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for d in attendance %}
-  <tr>
-  	<td><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
-  	<td> {{ d.date|date:"D M d" }} </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-  </table>
+	<div id="attendanceDates">
+	  <h4>Dates</h4>
 
-  </br></br>
-  <h4>Students</h4>
-  <table class="table table-striped" id="course-students-table">
-  <thead>
-  <tr>
-  <th>Username</th>
-  <th>First Name</th>
-  <th>Last Name</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for s in students  %}
-  	<tr>
-  	<td><a href="{% url 'courseStudentAttendanceURL' course.name s.username %}">{{ s.username }}</a></td>
-  	<td>{{ s.first_name }} </td>
-  	<td>{{ s.last_name }} </td>
-  	</tr>
-  {% endfor %}
-  </tbody>
-  </table>
+	  <table class="table table-striped" id="course-dates-table">
+	  <thead>
+	  <tr>
+	  <th>Date</th>
+	  <th data-orderable="false">Month Day</th>
+	  </tr>
+	  </thead>
+	  <tbody>
+	  {% for d in attendance %}
+	  <tr>
+	  	<td><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
+	  	<td> {{ d.date|date:"D M d" }} </td>
+	  </tr>
+	  {% endfor %}
+	  </tbody>
+	  </table>
+	</div>
+
+	<hr>
+
+	<div id="attendanceStudents">
+	  <h4>Students</h4>
+
+	  <table class="table table-striped" id="course-students-table">
+	  <thead>
+	  <tr>
+	  <th>Username</th>
+	  <th>First Name</th>
+	  <th>Last Name</th>
+	  </tr>
+	  </thead>
+	  <tbody>
+	  {% for s in students  %}
+	  	<tr>
+	  	<td><a href="{% url 'courseStudentAttendanceURL' course.name s.username %}">{{ s.username }}</a></td>
+	  	<td>{{ s.first_name }} </td>
+	  	<td>{{ s.last_name }} </td>
+	  	</tr>
+	  {% endfor %}
+	  </tbody>
+	  </table>
+	</div>
 
 {% endblock %}
