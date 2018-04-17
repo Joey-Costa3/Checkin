@@ -12,7 +12,7 @@
 
 {% block headerParagraph %}
 	Click a date or student username to view more details <br>
-  <a class="btn btn-outline-primary btn-sm" href="{% url 'editCourseURL' course.name %}">Edit Course</a>
+  <a class="btn btn-submit btn-sm" href="{% url 'editCourseURL' course.name %}">Edit Course</a>
 {% endblock %}
 
 {# // scripts for table sorting #}
@@ -39,7 +39,7 @@ $(document).ready( function () {
 		{% if inProgress %}
 			<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
 		{% else %}
-	  	{% include "attendance/oneInputForm.html.html" with form=form %}
+	  	{% include "attendance/oneInputForm.html" with form=form %}
 		{% endif %}
 	</div>
 

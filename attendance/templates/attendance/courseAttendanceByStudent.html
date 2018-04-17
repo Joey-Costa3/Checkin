@@ -1,6 +1,7 @@
 {% extends "attendance/course.html" %}
 
 {% block headerParagraph %}
+<a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' course_id %}">{{ course_id }} Home</a><br>
 	This is the attendance history for {{ student.username }} ({{ student.first_name }} {{ student.last_name }})
 	<br><br>
 	{{ a }}/{{ t }} (absent/#classes)
@@ -51,7 +52,7 @@
 		<tbody>
 		{% for record in recordList  %}
 			<tr>
-			<td>{{ record.date|safe }}</td>
+			<td><a href="{% url 'courseAttendanceURL' course.name record.date|date:"Y-m-d" %}">{{ record.date|safe }}</a></td>
 			<td>{{ record.status|safe }} </td>
 
 			</tr>

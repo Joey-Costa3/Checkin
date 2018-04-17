@@ -17,7 +17,7 @@
 
 {% block bodyContent %}
   {% for c in courses %}
-  <a class="btn btn-outline-primary btn-sm" href="{% url 'courseHomeURL' c.name %}">{{c.display_name}}</a>
+  <a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' c.name %}">{{c.display_name}}</a>
 	<br>
   {% endfor %}
 {% endblock %}

@@ -1,3 +1,5 @@
+<!DOCTYPE HTML>
+<html lang="en">
 <!--
 base
 - Login
@@ -8,8 +10,6 @@ base
 
 -->
 
-<!DOCTYPE HTML>
-<html>
 
 {% load bootstrap4 %}
 
@@ -50,17 +50,17 @@ base
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropDown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Student
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropDown1">
-              <a class="dropdown-item" href="{% url 'studentCheckInURL' %}">Checkin</a>
-              <a class="dropdown-item" href="{% url 'studentAttendanceHistoryURL' %}">Attendance History</a>
+            <div class="dropdown-menu" aria-label="Student Dropdown">
+              <a class="dropdown-item" aria-label="Student Checkin" href="{% url 'studentCheckInURL' %}">Checkin</a>
+              <a class="dropdown-item" aria-label="Student Attendance History" href="{% url 'studentAttendanceHistoryURL' %}">Attendance History</a>
             </div>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Instructor
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropDown2">
-              <a class="dropdown-item" href="{% url 'instructorURL' user_id=request.user.username %}">Courses</a>
+            <div class="dropdown-menu" aria-label="Instructor Dropdown">
+              <a class="dropdown-item"  aria-label="Instructor Courses" href="{% url 'instructorURL' user_id=request.user.username %}">Courses</a>
             </div>
           </li>
         </ul>

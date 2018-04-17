@@ -6,7 +6,17 @@ body {
   bgcolor: white
 }
 
-
+.btn-submit{
+background-color:#522D80;
+color:#fff;
+border-color:#522D80;
+}
+a{
+color:#2021CA;
+}
+a:hover{
+color:#000;
+}
 /*
 html, body
 { height: 100%;}
