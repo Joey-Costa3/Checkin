@@ -16,8 +16,20 @@
 
 
 {% block bodyContent %}
+<div>
+Current Courses:<br>
   {% for c in courses %}
-  <a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' c.name %}">{{c.display_name}}</a>
+  <a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' c.semester_id.name c.name  %}">{{ c.semester_id.name }}-{{c.display_name}}</a>
 	<br>
   {% endfor %}
+  </div>
+  
+  <div>
+  <br><br>
+Past Courses:<br>
+  {% for c in old_courses %}
+  <a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' c.semester_id.name c.name  %}">{{ c.semester_id.name }}-{{c.display_name}}</a>
+	<br>
+  {% endfor %}
+  </div>
 {% endblock %}

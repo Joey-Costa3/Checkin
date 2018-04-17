@@ -1,7 +1,7 @@
 {% extends "attendance/course.html" %}
 
 {% block headerParagraph %}
-<a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' course_id %}">{{ course_id }} Home</a><br>
+<a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' semester_id.name course_id %}">{{ course_id }} Home</a><br>
 	This is the attendance history for {{ student.username }} ({{ student.first_name }} {{ student.last_name }})
 	<br><br>
 	{{ a }}/{{ t }} (absent/#classes)
@@ -10,6 +10,19 @@
 {% endblock %}
 
 {% block bodyContent %}
+<div>
+	Present: {{p}}
+	<br>
+	Absent: {{a}}
+	<div class="progress">
+	  <div class="progress-bar bg-success" role="progressbar" style="width: {% widthratio p t 100 %}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			{% widthratio p t 100 %}%
+		</div>
+		<div class="progress-bar bg-danger" role="progressbar" style="width: {% widthratio a t 100 %}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			{% widthratio a t 100 %}%
+		</div>
+	</div>
+	</div>
 	<script>
 	$(document).ready( function () {
 		$("#course-student-attendance-table").DataTable({
@@ -52,7 +65,7 @@
 		<tbody>
 		{% for record in recordList  %}
 			<tr>
-			<td><a href="{% url 'courseAttendanceURL' course.name record.date|date:"Y-m-d" %}">{{ record.date|safe }}</a></td>
+			<td><a href="{% url 'courseAttendanceURL' semester_id.name course.name record.date|date:"Y-m-d" %}">{{ record.date|safe }}</a></td>
 			<td>{{ record.status|safe }} </td>
 
 			</tr>

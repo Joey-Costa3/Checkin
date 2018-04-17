@@ -2,7 +2,7 @@
 
 {% block headerParagraph %}
 	This is the attendance history for {{ course_id }} on {{ day }}<br>
-	<a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' course_id %}">{{ course_id }} Home</a>
+	<a class="btn btn-submit btn-sm" href="{% url 'courseHomeURL' semester_id.name course_id %}">{{ course_id }} Home</a>
 {% endblock %}
 
 {% block bodyContent %}
@@ -77,7 +77,7 @@
     <tbody>
     {% for record in recordList  %}
     	<tr>
-    	<td><a href="{% url 'courseStudentAttendanceURL' course_id record.studentusername %}">{{ record.studentusername|safe }}</a></td>
+    	<td><a href="{% url 'courseStudentAttendanceURL' semester_id.name course_id record.studentusername %}">{{ record.studentusername|safe }}</a></td>
     	<td>{{ record.user.first_name|safe }} </td>
     	<td>{{ record.user.last_name }} </td>
     	<td>{{ record.status }} </td>

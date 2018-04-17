@@ -21,6 +21,17 @@ from .helpers import validateUser
 def permissionDenied(request):
     return render(request, 'attendance/permissionDenied.html')
 
+def isSemesterActive(semester):
+        s = Semester.objects.filter(id=semester['id'])[0]
+        today = datetime.date.today()
+
+        return s.begin_date <= today and today <= s.end_date
+
+def getCurrentSemester():
+        today = datetime.date.today()
+        semester = Semester.objects.filter()
+        return semester[0]
+
 @login_required
 def logout(request):
         messages.info(request, 'You have been logged out sucessfully.')
@@ -32,21 +43,29 @@ def instructorHome(request, user_id):
         if not validateUser(request.user, user=user):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
-
+        semester = getCurrentSemester()
         instructor=get_object_or_404(User,username=user_id)
-        c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username,semester_id=semester.id).order_by('name')
+        for c in c_list:
+                 c.semester_id= Semester.objects.filter(id=c.semester_id)[0]
+        c_list_old = Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).exclude(semester_id=semester.id).order_by('name')
+        for c in c_list_old:
+                 c.semester_id= Semester.objects.filter(id=c.semester_id)[0]
+
         if len(c_list) == 0:
             messages.error(request, "You are not an instructor for any courses")
             return redirect('permissionDeniedURL')
 
-        return render(request, 'attendance/instructor.html', {'instructor': instructor, 'courses': c_list})
+        return render(request, 'attendance/instructor.html', {'instructor': instructor, 'courses': c_list, 'semester':semester, 'old_courses':c_list_old})
 
 @login_required
-def courseHome(request, course_id):
-        course = get_object_or_404(Course, name=course_id)
+def courseHome(request,semester_id, course_id):
+        semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
+        course = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
         if not validateUser(request.user, user=request.user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
+        semester = getCurrentSemester()
 
         inProgress=None;
         c = "11111"
@@ -75,8 +94,9 @@ def courseHome(request, course_id):
                                         matches=f.count()
 
                                 CourseCode.objects.create(code=c,courseid=course.id,expirationtime=d).save()
+                                
                                 return redirect('courseHomeURL',
-                                        course_id=course_id,
+                                         semester_id=semester.name, course_id=course_id
                                 )
                         else:
                                 #messages.info(request, 'Attendance in progress with code: ' + coursecode.first().code)
@@ -114,13 +134,17 @@ def courseHome(request, course_id):
                                 s['attendance']=""
                         else:
                                 s['attendance']=f[0]['status']
+
+        semesterActive = isSemesterActive(semesterForGivenID)
         return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor,
-            'courses': c_list, 'form':form, 'students': student_list, 'inProgress': inProgress, 'endtime':endtime})
+            'courses': c_list, 'form':form, 'students': student_list, 'inProgress': inProgress, 'endtime':endtime, 'semester_id':semester, 'active':semesterActive})
 
 @login_required
-def attendance(request, course_id, day):
-        course = get_object_or_404(Course, name=course_id)
+def attendance(request, semester_id, course_id, day):
+        semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
+        course = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
         user = get_object_or_404(User, username=request.user.username)
+        semester = getCurrentSemester()
         s_list=AttendanceRecord.objects.filter(courseid=course.id).filter(date=day).order_by('studentusername')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
         print(s_list)
@@ -131,15 +155,16 @@ def attendance(request, course_id, day):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
         return render(request, 'attendance/courseAttendanceByDay.html', {'course': course, 'course_id': course_id, 'day': day,'recordList':s_list,
-            'instructor': user, 'courses': c_list})
+            'instructor': user, 'courses': c_list, 'semester_id':semester})
 
 @login_required
-def studentAttendance(request, course_id, user_id):
-        course = get_object_or_404(Course, name=course_id)
+def studentAttendance(request, semester_id, course_id, user_id):
+        semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
+        course = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
         user = get_object_or_404(User, username=request.user.username)
         a_list=AttendanceRecord.objects.filter(courseid=course.id).filter(studentusername=user_id).order_by('date')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
-
+        semester = getCurrentSemester()
         present=sum(a.status == "P" for a in a_list)
         total=len(a_list)
         absent=total-present
@@ -150,15 +175,16 @@ def studentAttendance(request, course_id, user_id):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
         return render(request, 'attendance/courseAttendanceByStudent.html', {'course': course, 'course_id': course_id,
-            'student': student, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total, 'p': present})
+            'student': student, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total, 'p': present, 'semester_id':semester})
 @login_required
 
-def editAttendance(request, user_id, course_id, day):
-        course = get_object_or_404(Course, name=course_id)
+def editAttendance(request, semester_id, user_id, course_id, day):
+        semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
+        course = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
         user = get_object_or_404(User, username=user_id)
         s_list=AttendanceRecord.objects.filter(courseid=course.id).filter(date=day).order_by('studentusername')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
-
+        semester = getCurrentSemester()
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
 
         if not validateUser(request.user, user=user, course=course):
@@ -174,6 +200,7 @@ def editAttendance(request, user_id, course_id, day):
                                 instance.save()
                         return redirect('courseAttendanceURL',
                                 user_id=user_id,
+                                semester_id=semester.name,
                                 course_id=course_id,
                                 day=day,
                         )
@@ -181,15 +208,17 @@ def editAttendance(request, user_id, course_id, day):
                         messages.info(request, 'INVALID')
         else:
                 formset=RecordFormset(queryset=s_list)
-        return render(request, 'attendance/editAttendance.html', {'user_id':user_id,'course_id': course_id, 'day': day,'formset':formset, 'instructor': user, 'courses': c_list})
+        return render(request, 'attendance/editAttendance.html', {'user_id':user_id,'course_id': course_id, 'day': day,'formset':formset, 'instructor': user, 'courses': c_list, 'semester_id':semester})
 
 @login_required
-def editCourse(request, course_id):
-        newc = get_object_or_404(Course, name=course_id)
+def editCourse(request, semester_id, course_id):
+        semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
+        newc = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
         user = get_object_or_404(User, username=request.user.username)
         if not validateUser(request.user, user=user, course=newc):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
+        semester = getCurrentSemester()
 
         if request.method == 'POST':
                 form = UpdateCourse(request.POST)
@@ -208,7 +237,7 @@ def editCourse(request, course_id):
                                                         raise Exception('User not found: ' + t)
                         messages.info(request, 'UPDATED')
                         return redirect('editCourseURL',
-                                course_id=newc.name,
+                                semester_id=semester.name, course_id=newc.name
                         )
                 else:
                         messages.info(request, 'INVALID')
@@ -223,12 +252,9 @@ def editCourse(request, course_id):
         instructor=get_object_or_404(User,username=request.user.username)
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=instructor.username).order_by('name')
         return render(request, 'attendance/courseEdit.html',
-                {'course_id': course_id, 'form': form, 'instructor': instructor, 'courses': c_list, 'course':newc}
+                {'course_id': course_id, 'semester_id':semester, 'form': form, 'instructor': instructor, 'courses': c_list, 'course':newc}
         )
 
-@login_required
-def exportCSV(request, course_id):
-        attendance = AttendanceRecords.objects.filter(courseid = course_id).order_by('-date');
 
 @login_required
 def studentCheckIn(request):
@@ -297,7 +323,12 @@ def studentCheckIn(request):
 @login_required
 def studentViewAttendance(request):
         # get every attendance record for our student
-        student_records = AttendanceRecord.objects.filter(studentusername=request.user.username).order_by('courseid', '-date')
+        semester = getCurrentSemester()
+        activeCourses = Course.objects.filter(semester_id=semester.id)
+        c_id = []
+        for ac in activeCourses:
+                  c_id.append(ac.id)
+        student_records = AttendanceRecord.objects.filter(studentusername=request.user.username,courseid__in=c_id).order_by('courseid', '-date')
 
         # change the 'courseid' field to actually grab the course display name
         for r in student_records:

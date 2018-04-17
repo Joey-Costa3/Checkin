@@ -4,7 +4,7 @@ from django.views.generic import RedirectView
 
 from . import views
 
-course_prefix = r'course/(?P<course_id>[a-zA-Z0-9\-]{,20})/'
+course_prefix = r'course/(?P<semester_id>[a-zA-Z0-9\-]{,20})/(?P<course_id>[a-zA-Z0-9\-]{,20})/'
 instructor_prefix = r'instructor/(?P<user_id>[a-zA-Z0-9]{,15})/'
 
 urlpatterns = [

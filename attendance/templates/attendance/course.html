@@ -11,8 +11,14 @@
 
 
 {% block headerParagraph %}
+
+{% if active %}
+
 	Click a date or student username to view more details <br>
-  <a class="btn btn-submit btn-sm" href="{% url 'editCourseURL' course.name %}">Edit Course</a>
+  <a class="btn btn-submit btn-sm" href="{% url 'editCourseURL' semester_id.name course.name %}">Edit Course</a>
+  {% else %}
+  This course has ended. You can no longer edit this course.
+    {% endif %} 
 {% endblock %}
 
 {# // scripts for table sorting #}
@@ -32,7 +38,8 @@ $(document).ready( function () {
     });
 } );
 </script>
-
+	{% if active %}
+	
 	<div id="todaysAttendance">
 	  <h4>Take Today's Attendance</h4>
 
@@ -42,6 +49,10 @@ $(document).ready( function () {
 	  	{% include "attendance/oneInputForm.html" with form=form %}
 		{% endif %}
 	</div>
+	{% else %} 
+	This course has ended. 
+	{% endif %}
+	
 
 	<hr>
 
@@ -86,7 +97,7 @@ $(document).ready( function () {
 	  <tbody>
 	  {% for d in attendance %}
 	  <tr>
-	  	<td><a href="{% url 'courseAttendanceURL' course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
+	  	<td><a href="{% url 'courseAttendanceURL' semester_id.name course.name d.date|date:"Y-m-d" %}">{{ d.date|date:"Y-m-d" }}</a></td>
 	  	<td> {{ d.date|date:"D M d" }} </td>
 	  </tr>
 	  {% endfor %}
@@ -110,7 +121,7 @@ $(document).ready( function () {
 	  <tbody>
 	  {% for s in students  %}
 	  	<tr>
-	  	<td><a href="{% url 'courseStudentAttendanceURL' course.name s.username %}">{{ s.username }}</a></td>
+	  	<td><a href="{% url 'courseStudentAttendanceURL' semester_id.name course.name s.username %}">{{ s.username }}</a></td>
 	  	<td>{{ s.first_name }} </td>
 	  	<td>{{ s.last_name }} </td>
 	  	</tr>
