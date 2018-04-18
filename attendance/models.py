@@ -32,6 +32,8 @@ class Semester(models.Model):
   #def get_absolute_url(self):
   #  return reverse('webhandin.handin.views.semester_course_list',
   #                 args=[self.name])
+  def __str__(self):
+    return "{}, {}, {}, {}".format(self.name, self.display_name, self.begin_date, self.end_date)
 
   def clean_fields(self, exclude=None):
     err = {}

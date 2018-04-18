@@ -29,7 +29,7 @@ def isSemesterActive(semester):
 
 def getCurrentSemester():
         today = datetime.date.today()
-        semester = Semester.objects.filter()
+        semester = Semester.objects.filter(begin_date__lt=today, end_date__gt=today)
         return semester[0]
 
 @login_required
