@@ -64,6 +64,9 @@
 
   <hr>
 
+<a class="btn btn-submit btn-sm" href="{% url 'editAttendanceURL' semester_id.name course.name day %}">Edit Attendance</a>
+
+<hr>
   <div>
     <table class="table table-striped" id="course-date-attendance-table">
     <thead>
@@ -80,7 +83,7 @@
     	<td><a href="{% url 'courseStudentAttendanceURL' semester_id.name course_id record.studentusername %}">{{ record.studentusername|safe }}</a></td>
     	<td>{{ record.user.first_name|safe }} </td>
     	<td>{{ record.user.last_name }} </td>
-    	<td>{{ record.status }} </td>
+    	<td>{% if record.status == 'P' %}{% elif record.status == 'U' %}&#10060;{% elif record.status == 'E' %}Excused{% elif record.status == 'T' %}&#128344;{% else %}{% endif %}</td>
 
     	</tr>
     {% endfor %}

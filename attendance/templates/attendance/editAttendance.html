@@ -3,7 +3,7 @@
 {% block bodyContent %}
 <h3>Attendance for Course {{ course_id }} on {{ day }}</h3>
 
-<form method="post" action="{% url 'courseAttendanceURL' user_id semester.name course_id day %}">
+<form method="post" action="{% url 'editAttendanceURL' semester_id.name course_id day %}">
 {{ formset.management_form }}
 
 {% for form in formset %}

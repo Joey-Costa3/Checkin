@@ -147,7 +147,7 @@ def attendance(request, semester_id, course_id, day):
         semester = getCurrentSemester()
         s_list=AttendanceRecord.objects.filter(courseid=course.id).filter(date=day).order_by('studentusername')
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
-        print(s_list)
+        #print(s_list)
 
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
 
@@ -166,8 +166,10 @@ def studentAttendance(request, semester_id, course_id, user_id):
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
         semester = getCurrentSemester()
         present=sum(a.status == "P" for a in a_list)
+        excused=sum(a.status == "E" for a in a_list)
+        tardy=sum(a.status == "T" for a in a_list)
         total=len(a_list)
-        absent=total-present
+        absent=total-present-excused-tardy
 
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
         student = settings.GET_USER_BY_USERNAME(user_id)
@@ -175,23 +177,23 @@ def studentAttendance(request, semester_id, course_id, user_id):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
         return render(request, 'attendance/courseAttendanceByStudent.html', {'course': course, 'course_id': course_id,
-            'student': student, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total, 'p': present, 'semester_id':semester})
+            'student': student, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total, 'p': present, 'e':excused,'tardy':tardy, 'semester_id':semester})
 @login_required
 
-def editAttendance(request, semester_id, user_id, course_id, day):
+def editAttendance(request, semester_id, course_id, day):
         semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
         course = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
-        user = get_object_or_404(User, username=user_id)
         s_list=AttendanceRecord.objects.filter(courseid=course.id).filter(date=day).order_by('studentusername')
-        c_list= Course.objects.filter(isactive=True).filter(instructorusername=user.username).order_by('name')
+        c_list= Course.objects.filter(isactive=True).filter(instructorusername=request.user.username).order_by('name')
         semester = getCurrentSemester()
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
 
-        if not validateUser(request.user, user=user, course=course):
+        if not validateUser(request.user, user=request.user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
         #updating atttendance after change is submitted by instructor
         if request.method == 'POST':
+                print(RecordFormset(request.POST))
                 formset=RecordFormset(request.POST)
                 if formset.is_valid():
                         instances=formset.save(commit=False)
@@ -199,7 +201,6 @@ def editAttendance(request, semester_id, user_id, course_id, day):
                         for instance in instances:
                                 instance.save()
                         return redirect('courseAttendanceURL',
-                                user_id=user_id,
                                 semester_id=semester.name,
                                 course_id=course_id,
                                 day=day,
@@ -208,7 +209,8 @@ def editAttendance(request, semester_id, user_id, course_id, day):
                         messages.info(request, 'INVALID')
         else:
                 formset=RecordFormset(queryset=s_list)
-        return render(request, 'attendance/editAttendance.html', {'user_id':user_id,'course_id': course_id, 'day': day,'formset':formset, 'instructor': user, 'courses': c_list, 'semester_id':semester})
+                print(formset)
+        return render(request, 'attendance/editAttendance.html', {'course_id': course_id, 'day': day,'formset':formset, 'instructor': request.user, 'courses': c_list, 'semester_id':semester})
 
 @login_required
 def editCourse(request, semester_id, course_id):

@@ -69,7 +69,7 @@ Download all of your attendance history
 	<td>{{ r.date|date:"Y-m-d" }}</td>
   <td>{{ r.date|date:"D M d" }} </td>
 	<td>{{ r.courseid }} </td>
-	<td>{{ r.status }} </td>
+	<td>{% if r.status == 'P' %}{% elif r.status == 'U' %}&#10060;{% elif r.status == 'E' %}Excused{% elif r.status == 'T' %}&#128344;{% else %}{% endif %}</td>
 	</tr>
 {% endfor %}
 </tbody>
