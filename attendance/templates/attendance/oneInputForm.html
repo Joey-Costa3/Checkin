@@ -15,14 +15,3 @@
   {% bootstrap_button 'Submit' button_class='btn-submit' size='sm' %}
 </form>
 </div>
-
-<!-- THIS IS THE OLD FORM
-{% comment %}
-
-<form action="{{ request.path }}" method="post">
-	{% csrf_token %}
-	{{ form.as_p }}
-	<input type="submit" class="button btn-primary" value="Submit" onclick="this.disabled=true; this.form.submit()"/>
-</form>
-{% endcomment %}
--->

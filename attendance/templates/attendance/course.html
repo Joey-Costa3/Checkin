@@ -18,7 +18,7 @@
   <a class="btn btn-submit btn-sm" href="{% url 'editCourseURL' semester_id.name course.name %}">Edit Course</a>
   {% else %}
   This course has ended. You can no longer edit this course.
-    {% endif %} 
+    {% endif %}
 {% endblock %}
 
 {# // scripts for table sorting #}
@@ -39,20 +39,20 @@ $(document).ready( function () {
 } );
 </script>
 	{% if active %}
-	
+
 	<div id="todaysAttendance">
 	  <h4>Take Today's Attendance</h4>
 
+		{# // check if we have already started taking attendance #}
 		{% if inProgress %}
 			<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
 		{% else %}
 	  	{% include "attendance/oneInputForm.html" with form=form %}
 		{% endif %}
 	</div>
-	{% else %} 
-	This course has ended. 
+	{% else %}
+	This course has ended.
 	{% endif %}
-	
 
 	<hr>
 
