@@ -61,12 +61,13 @@
       ]
     </textarea>
   </div>
-
+{% if active %}
   <hr>
 
 <a class="btn btn-submit btn-sm" href="{% url 'editAttendanceURL' semester_id.name course.name day %}">Edit Attendance</a>
 
 <hr>
+{% endif %}
   <div>
     <table class="table table-striped" id="course-date-attendance-table">
     <thead>
