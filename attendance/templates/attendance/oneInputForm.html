@@ -8,12 +8,13 @@
 }
 </style>
 
+<div class="col-md-4 col-centered">
 <form action="{{ request.path }}" method="post">
   {% csrf_token %}
   {% bootstrap_form form %}
   {% bootstrap_button 'Submit' button_class='btn-submit' size='sm' %}
 </form>
-
+</div>
 
 <!-- THIS IS THE OLD FORM
 {% comment %}
