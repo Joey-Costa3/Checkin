@@ -16,14 +16,15 @@
 
 
 {% block bodyContent %}
+{% for course in course_records %}
 <script>
 $(document).ready( function () {
-    $("#students-attendance-history-table").DataTable({
+    $("#students-attendance-history-table{{course.0.courseid}}").DataTable({
     "order": [[0, "desc"]]
     });
 } );
 </script>
-
+{% endfor %}
 <div id="csvarea">
 
 
@@ -54,24 +55,29 @@ Download all of your attendance history
 </div>
 
 
-<table class="table table-striped" id="students-attendance-history-table">
+<hr>
+<div id="course_attendance_tables">
+{% for course in course_records %}
+<h4>Attendance history for course {{course.0.courseid}}</h4>
+<table class="table table-striped" id="students-attendance-history-table{{course.0.courseid}}">
 <thead>
 <tr>
 <th>Date</th>
 <th data-orderable="false">Month Day</th>
-<th>Course</th>
 <th>Record</th>
 </tr>
 </thead>
-<tbody>
-{% for r in records  %}
-	<tr>
+{% for r in course %} 
+<tr>
 	<td>{{ r.date|date:"Y-m-d" }}</td>
   <td>{{ r.date|date:"D M d" }} </td>
-	<td>{{ r.courseid }} </td>
 	<td>{% if r.status == 'P' %}{% elif r.status == 'U' %}&#10060;{% elif r.status == 'E' %}Excused{% elif r.status == 'T' %}&#128344;{% else %}{% endif %}</td>
 	</tr>
 {% endfor %}
 </tbody>
 </table>
+<br><hr><br>
+{% endfor %}
+</div>
+
 {% endblock %}

@@ -21,12 +21,13 @@ from .helpers import validateUser
 def permissionDenied(request):
     return render(request, 'attendance/permissionDenied.html')
 
+#check to see if the semester being passed is current. 
 def isSemesterActive(semester):
         s = Semester.objects.filter(id=semester['id'])[0]
         today = datetime.date.today()
-
         return s.begin_date <= today and today <= s.end_date
 
+#get the semester that it currently is.
 def getCurrentSemester():
         today = datetime.date.today()
         semester = Semester.objects.filter(begin_date__lt=today, end_date__gt=today)
@@ -37,6 +38,7 @@ def logout(request):
         messages.info(request, 'You have been logged out sucessfully.')
         return dLogout(request)
 
+#attendance/instructor.html
 @login_required
 def instructorHome(request, user_id):
         user = get_object_or_404(User, username=user_id)
@@ -58,6 +60,7 @@ def instructorHome(request, user_id):
 
         return render(request, 'attendance/instructor.html', {'instructor': instructor, 'courses': c_list, 'semester':semester, 'old_courses':c_list_old})
 
+#attendance/course.html
 @login_required
 def courseHome(request,semester_id, course_id):
 
@@ -141,6 +144,7 @@ def courseHome(request,semester_id, course_id):
         return render(request, 'attendance/course.html', {'course': course,'attendance':d_list,'code':c, 'instructor': instructor,
             'courses': c_list, 'form':form, 'students': student_list, 'inProgress': inProgress, 'endtime':endtime, 'semester_id':semester, 'active':semesterActive})
 
+#attendance/courseAttendanceByDay.html
 @login_required
 def attendance(request, semester_id, course_id, day):
         semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
@@ -161,6 +165,7 @@ def attendance(request, semester_id, course_id, day):
         return render(request, 'attendance/courseAttendanceByDay.html', {'course': course, 'course_id': course_id, 'day': day,'recordList':s_list,
             'instructor': user, 'courses': c_list, 'semester_id':semester, 'active':semesterActive})
 
+#attendance/courseAttendanceByStudent.html
 @login_required
 def studentAttendance(request, semester_id, course_id, user_id):
         semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
@@ -182,8 +187,9 @@ def studentAttendance(request, semester_id, course_id, user_id):
                 return redirect('permissionDeniedURL')
         return render(request, 'attendance/courseAttendanceByStudent.html', {'course': course, 'course_id': course_id,
             'student': student, 'recordList':a_list, 'instructor': user, 'courses': c_list, 'a': absent, 't': total, 'p': present, 'e':excused,'tardy':tardy, 'semester_id':semester})
-@login_required
 
+#attendance/editAttendance.html
+@login_required
 def editAttendance(request, semester_id, course_id, day):
         semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
         course = get_object_or_404(Course, name=course_id, semester_id=semesterForGivenID['id'])
@@ -214,6 +220,7 @@ def editAttendance(request, semester_id, course_id, day):
                 formset=RecordFormset(queryset=s_list)
         return render(request, 'attendance/editAttendance.html', {'course_id': course_id, 'day': day,'formset':formset, 'instructor': request.user, 'courses': c_list, 'semester_id':semester})
 
+#attendance/courseEdit.html
 @login_required
 def editCourse(request, semester_id, course_id):
         semesterForGivenID = Semester.objects.filter(name=semester_id).values('id')[0]
@@ -259,7 +266,7 @@ def editCourse(request, semester_id, course_id):
                 {'course_id': course_id, 'semester_id':semester, 'form': form, 'instructor': instructor, 'courses': c_list, 'course':newc}
         )
 
-
+#attendance/studentCheckIn.html
 @login_required
 def studentCheckIn(request):
 
@@ -324,9 +331,10 @@ def studentCheckIn(request):
         # pass back this list before rendering page. Display info in html
         return render(request, 'attendance/studentCheckIn.html', {'form': form})
 
+#attendance/studentViewAttendance.html
 @login_required
 def studentViewAttendance(request):
-        # get every attendance record for our student
+        # get every attendance record for our student they will only be able to see the current semesters records
         semester = getCurrentSemester()
         activeCourses = Course.objects.filter(semester_id=semester.id)
         c_id = []
@@ -336,7 +344,20 @@ def studentViewAttendance(request):
 
         # change the 'courseid' field to actually grab the course display name
         for r in student_records:
-                r.courseid = Course.objects.get(pk=r.courseid).display_name;
-
+                r.courseid = Course.objects.get(pk=r.courseid).name;
+        # get the values separated by course. This way we will be able to display data separated by course
+        records = [[]]
+        if student_records.count() > 0:
+                course_id = student_records[0].courseid
+                entry = 0
+                for r in student_records:
+                        if course_id == r.courseid:
+                                records[entry].append(r)
+                        else:
+                                records.append([])
+                                entry += 1
+                                records[entry].append(r)
+                                course_id = r.courseid
+                
         # pass back this list before rendering page. Display info in html
-        return render(request, 'attendance/studentViewAttendance.html', {'records': student_records, 'username': request.user.username})
+        return render(request, 'attendance/studentViewAttendance.html', {'records': student_records, 'username': request.user.username, 'course_records':records})
