@@ -1,0 +1,33 @@
+﻿To add an alias, do
+‘sudo nano ~/.bashrc’
+This will open the editor. Paste all of these at the end (some are already there)
+Then save it
+Back on the command line, do ‘source ~/.bashrc’
+Now they will work
+
+
+
+
+alias runcheckin='sudo python3 manage.py runserver 0.0.0.0:80'
+
+
+alias checkin='cd ~/checkin'
+
+
+alias postgres='sudo su - postgres'
+
+
+alias pullmstr='git pull origin master'
+
+
+alias pushmstr='git push origin master'
+
+
+# this one is in case you get pushing/pulling errors from your temporary python files
+alias delpycache='find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs sudo rm -rf'
+
+
+alias ..='cd ..'
+alias ...='cd ../../../'
+alias ....='cd ../../../../'
+alias .....='cd ../../../../'

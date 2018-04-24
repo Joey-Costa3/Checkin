@@ -6,7 +6,24 @@ Bin
 the official release for the dbbackup django module is bugged and does not allow for excluding tables, although it is partially implemented. This version of the tool works as intented (by adding a DBBACKUP\_EXCLUDED list to settings.py)
 
 
-Scripts
+## Setup
+## (Updated May 2018)
+How to setup the checkin system 
+Begin by opening the folder named setup
+Follow the Ubuntu Env Setup.txt document
+If you are not using the git (or the git account is no longer available you can skip that section)
+
+Once the Ubuntu environment is set up you can open the CreateDatabase.txt file. 
+	This file will set up the database with the correct tables as well as some beginning dummy data 
+		A semester, a super user, and a course are created in this example. 
+
+OPTIONAL:
+You can open the Ubuntu Env Bash Alias.txt 
+	this is to add some additional functionality to your bash that speeds up some terminal commands
+
+
+
+Scripts OLD SETUP 
 -------
 All scripts contain within the scripts directory should be executed from the project root (ie. where manage.py is located)
 
@@ -17,3 +34,5 @@ All scripts contain within the scripts directory should be executed from the pro
 - runServer.sh: executes the server on port 18000, making it accessible outside of localhost
 - backup.sh: backups up the db and stores it in the backups folder
 - restore\_latest.sh: restores the most recent backup found in the backups folder
+------- end old setup environment
+

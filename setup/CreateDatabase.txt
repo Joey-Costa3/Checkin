@@ -1,0 +1,127 @@
+﻿// If you need to drop tables follow the comment block below otherwise skip to Create tables section
+
+
+/*
+sudo su - postgres
+psql 
+\c checkin
+drop schema public cascade;
+create schema public;
+\q 
+exit
+*/
+
+
+// Begin below this line if you are creating the database for the first time 
+//---------------------------------------- Create table section ------------------------------------------------//
+cd checkin
+python3 manage.py migrate
+
+
+sudo su - postgres
+psql
+
+
+\c checkin
+
+
+// paste the 5 create table statements below
+
+
+CREATE TABLE attendance_semester (
+        id                        SERIAL                PRIMARY KEY,
+        name                        VARCHAR(20) , 
+        display_name                 VARCHAR(20)         UNIQUE,
+        begin_date                 DATE, 
+        end_date                 DATE
+);
+CREATE TABLE attendance_course (
+        id                        SERIAL                        PRIMARY KEY,
+        semester_id                INTEGER                 REFERENCES attendance_semester (id),
+        name                         VARCHAR(20), 
+        display_name                 VARCHAR(20), 
+instructor                 VARCHAR(20),
+        student_list                VARCHAR(150)        REFERENCES auth_user (username),
+        instructorUsername        VARCHAR(15), 
+        checkinWindow         INTEGER, 
+        isActive                BOOLEAN
+);
+CREATE TABLE attendance_coursecode (
+        id                        SERIAL                PRIMARY KEY,
+        code                        VARCHAR(5),
+        courseId                INTEGER ,
+        codeDate                DATE,
+        expirationTime                TIMESTAMP
+);
+CREATE TABLE attendance_attendancerecord (
+id                        SERIAL,
+        user_id                INTEGER        REFERENCES auth_user (id),
+        courseId                INTEGER,
+        studentUsername        VARCHAR(10),
+        date                        DATE,
+        signIn                        TIMESTAMP,
+        status                        VARCHAR(2)
+);
+
+
+CREATE TABLE attendance_course_student_list (
+id                SERIAL                PRIMARY KEY,
+course_id        INTEGER                 REFERENCES attendance_course(id),
+user_id        INTEGER                 REFERENCES auth_user(id)
+);
+/*
+Use the following command to see what tables you have
+\dt
+There should be 15 total tables
+                     List of relations
+ Schema |              Name              | Type  |  Owner   
+--------+--------------------------------+-------+----------
+ public | attendance_attendancerecord    | table | postgres
+ public | attendance_course              | table | postgres
+ public | attendance_course_student_list | table | postgres
+ public | attendance_coursecode          | table | postgres
+ public | attendance_semester            | table | postgres
+ public | auth_group                     | table | postgres
+ public | auth_group_permissions         | table | postgres
+ public | auth_permission                | table | postgres
+ public | auth_user                      | table | postgres
+ public | auth_user_groups               | table | postgres
+ public | auth_user_user_permissions     | table | postgres
+ public | django_admin_log               | table | postgres
+ public | django_content_type            | table | postgres
+ public | django_migrations              | table | postgres
+ public | django_session                 | table | postgres
+
+
+*/
+
+
+// use this statement to create a semester
+insert into attendance_semester values (0, 'S18', 'Spring 2018', '2018-01-01', '2018-05-31');
+
+
+// from here exit postgres
+
+
+\q
+exit
+
+
+// use this statement to create a super user (this is not necessarily an instructor but it can be)
+python3 manage.py createsuperuser
+// follow prompts
+super
+super@test.com
+password
+
+
+python3 manage.py create_course 'S18' 'CPSC4140' --instructor 'super'
+
+
+//Once you create everything above run the server using 
+sudo python3 manage.py runserver 0.0.0.0:80
+
+
+//Go to the url 0.0.0.0:80 and login as the super user
+//Go to the url 0.0.0.0/admin
+//This url is going to be used to create students, groups, more semesters, and courses.

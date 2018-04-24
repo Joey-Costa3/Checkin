@@ -1,0 +1,70 @@
+//Here is the script to create a new ubuntu machine 
+
+
+// OS: ubuntu 16.04
+
+
+sudo apt-get update
+sudo apt-get upgrade -y
+// need to hit enter twice when prompted 
+// “keep the local version currently installed”
+sudo apt-get install gcc -y
+
+
+sudo apt-get install python3.5 python3-pip postgresql -y
+
+
+sudo su - postgres
+psql
+
+
+// in the postgres command line
+// postgres=# <- what your command line should look like
+create database checkin;
+alter user postgres with password 'cpsc4910';
+
+
+// then exit postgres for now
+\q
+exit
+
+
+sudo pip3 install django==1.11 psycopg2 django-bootstrap4
+// ignore warning about using pip 9.0.1
+
+
+// create ssh key and upload to buffet (used for git)
+
+/// SETTING UP THE CHECKIN SYSTEM THROUGH GIT
+ssh-keygen
+// hit enter 3 times to use default with no password
+// grab the key using
+cat /home/ubuntu/.ssh/id_rsa.pub
+
+
+// copy what it just spit out and go to buffet.cs.clemson.edu
+// go to settings. hit create key
+// name it something
+// paste the spit out from the command above in the key: box
+// hit save
+
+
+// now go back to the terminal window
+mkdir checkin
+cd checkin
+
+
+git init
+git remote add origin buffet@buffet.cs.clemson.edu:jacosta/checkin
+git pull origin master
+// type yes when prompted
+
+// RESUME FROM HERE IF YOU ARE NOT USING GIT FOR THESE FILES
+// if you have not opened up port 8000 in your firewall then you can use port 80 for testing
+// go to the file attendance_tracker/settings.py and add your ip address to ALLOWED_HOSTS
+sudo python3 manage.py runserver 0.0.0.0:80
+
+
+
+
+// TO SET UP THE DATABASE PLEASE OPEN THE CreateDatabase.txt
