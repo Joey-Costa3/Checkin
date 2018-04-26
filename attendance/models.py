@@ -116,7 +116,7 @@ class AttendanceRecord(models.Model):
 	UNEXCUSED = 'U'
 	STATUS_CHOICES = (
 		(PRESENT, 'Present'),
-		(EXCUSED, 'Escused'),
+		(EXCUSED, 'Excused'),
 		(UNEXCUSED, 'Unexcused'),
 	)
 
