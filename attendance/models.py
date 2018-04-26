@@ -61,10 +61,6 @@ class Semester(models.Model):
 
   def is_in_session(self):
     today = datetime.date.today()
-    print("Today's date, begin date, end date")
-    print(today)
-    print(self.begin_date)
-    print(self.end_date)
     return self.begin_date <= today and today <= self.end_date
 
 class Course(models.Model):

@@ -197,11 +197,10 @@ def editAttendance(request, semester_id, course_id, day):
         c_list= Course.objects.filter(isactive=True).filter(instructorusername=request.user.username).order_by('name')
         semester = Semester.objects.get(id=semesterForGivenID['id'])
         RecordFormset=modelformset_factory(AttendanceRecord,form=AttendanceStatus,can_delete=False, extra=0)
-
         if not validateUser(request.user, user=request.user, course=course):
                 messages.error(request, "You do not have permission to view {}".format(request.get_full_path()))
                 return redirect('permissionDeniedURL')
-        #updating atttendance after change is submitted by instructor
+        #updating attendance after change is submitted by instructor
         if request.method == 'POST':
                 formset=RecordFormset(request.POST)
                 if formset.is_valid():
