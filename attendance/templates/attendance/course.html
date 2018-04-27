@@ -45,7 +45,9 @@ $(document).ready( function () {
 
 		{# // check if we have already started taking attendance #}
 		{% if inProgress %}
-			<p>Attendance in progress with code: {{ code }}. Ends: {{endtime}} UTC </p>
+			<div id="attendance"> Attendance in progress with code: 
+			<h2>{{ code }}</h2>
+			Ends: {{endtime}} UTC </div>
 		{% else %}
 	  	{% include "attendance/oneInputForm.html" with form=form %}
 		{% endif %}
